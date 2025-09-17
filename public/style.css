@@ -1,0 +1,26 @@
+/* NameGasm – style.css (seguro, no sobreescribe tu diseño de las páginas) */
+
+/* Reset básico */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/* Tipografía base (sin tocar colores ni fondos) */
+body { font-family: Arial, sans-serif; }
+
+/* Elementos comunes (márgenes suaves, sin forzar alineaciones) */
+h1, h2, h3, h4, h5, h6 { margin: 0 0 .75rem; font-weight: inherit; }
+p { margin: 0 0 1rem; }
+
+/* Utilidades opcionales (no invasivas) */
+.hidden { display: none !important; }
+.text-center { text-align: center !important; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* Botón base reutilizable (sin colores de marca para no chocar) */
+.btn {
+  display: inline-block;
+  padding: .75rem 1.25rem;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}

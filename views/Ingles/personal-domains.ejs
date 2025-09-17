@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Personal Domains</title>
+  <style>
+    .pricing-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+      margin: 40px 0;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+    .card:hover { transform: translateY(-5px); }
+
+    .card h1, .card h2 {
+      margin: 0;
+      font-size: 22px;
+      color: #fff;
+    }
+
+    .price {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 12px 0;
+      color: #ffd700;
+    }
+
+    .desc {
+      font-size: 12px;
+      margin-bottom: 12px;
+      color: #f0f0f0;
+    }
+
+    /* Smaller payment/action buttons */
+    .btn {
+      display: inline-block;
+      padding: 6px 12px;        /* reduced size */
+      background: #ffd700;
+      color: #0d1b3a;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-size: 13px;          /* reduced font */
+      line-height: 1.2;
+    }
+    .btn:hover { background: #ffcc00; }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #0d1b3a;
+    }
+    h1 { color: white; }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .btn-home {
+      background-color: #ff9933;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.1rem;   /* slightly smaller */
+      font-size: 0.95rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+    }
+    .btn-home:hover { background-color: #e68a00; }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      background-color: #ff9933;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #e68a00; }
+
+    #result {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #fff;
+      text-align: left;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+	
+	/* ---- Compactar botones de pago en las tarjetas ---- */
+.pricing-container .card .btn{
+  display: inline-flex !important;   /* evita block heredado */
+  width: auto !important;            /* quita 100% heredado */
+  max-width: 180px;                  /* ajusta a tu gusto: 140–200px */
+  padding: 6px 12px !important;      /* más pequeño */
+  font-size: 13px !important;
+  line-height: 1.2;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;               /* evita que salte de línea */
+  margin: 0 auto;                    /* centrado dentro de la card */
+}
+
+/* opcional: si quieres aún más pequeño, usa esta variante */
+.pricing-container .card .btn.btn--sm{
+  max-width: 140px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Language switcher (EN → ES) -->
+  <div style="position:fixed; top:15px; right:50px; z-index:9999; display:flex; gap:10px;">
+    <a href="/es/esp-personal-domains" hreflang="es" aria-label="Ver en Español">
+      <img src="/img/bandera-es.png" alt="Español" width="60" height="50" style="cursor:pointer;">
+    </a>
+  </div>
+
+  <h1>Personal Domains</h1>
+  <p style="color:white">Find a unique domain to build your personal online brand.</p>
+
+  <input type="text" id="name" placeholder="Enter your name or idea">
+  <button onclick="searchPersonalDomain()">Search</button>
+
+  <div id="result"></div>
+
+  <div style="margin-top: 1rem;">
+    <button class="btn-home" onclick="window.location.href='/en/namegasm-pagina-inicial-basica'">Go Back</button>
+  </div>
+
+  <script>
+    function searchPersonalDomain() {
+      const name = document.getElementById('name').value.trim();
+      const out = document.getElementById('result');
+      if (!name) {
+        out.innerHTML = "⚠ Please enter a name or keyword.";
+        return;
+      }
+      out.innerHTML =
+        "Available personal domains for <b>" + name + "</b>:<br>- " +
+        name + ".me<br>- " + name + ".name<br>- " + name + ".bio<br>- " + name + ".id";
+    }
+  </script>
+
+  <!-- Chatbot -->
+  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+    <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+      💬 Chat
+    </button>
+    <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("chatbot-toggle");
+    const box = document.getElementById("chatbot-box");
+    const input = document.getElementById("chatbot-input");
+    const send = document.getElementById("chatbot-send");
+    const messages = document.getElementById("chatbot-messages");
+
+    toggle.addEventListener("click", () => {
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+
+    send.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (text){
+        messages.innerHTML += `<div style="margin-bottom:10px;"><strong>You:</strong> ${text}</div>`;
+        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thanks! We'll reply soon.</div>`;
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+
+  <div class="pricing-container">
+    <div class="card">
+      <h1>Guide</h1>
+      <p class="price">Free</p>
+      <p class="desc">Access useful information on this topic.</p>
+      <a href="#" class="btn">Access</a>
+    </div>
+
+    <div class="card">
+      <h1>Domain Purchase</h1>
+      <p class="price">€9–15 /year (by TLD)</p>
+      <a href="#" class="btn">Buy</a>
+    </div>
+  </div>
+
+</body>
+</html>

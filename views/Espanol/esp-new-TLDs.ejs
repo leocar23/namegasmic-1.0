@@ -1,0 +1,232 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nuevos TLDs</title>
+  <style>
+    /* === Cartas iguales y texto legible === */
+    :root{
+      --card-w: 260px;   /* cambia aquí si quieres más ancho */
+      --card-h: 180px;   /* o más alto */
+      --fs-title: 16px;
+      --fs-price: 14px;
+      --fs-desc: 12px;
+      --fs-btn: 14px;
+    }
+
+    .pricing-container{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(var(--card-w), 1fr));
+      gap: 32px;
+      margin: 20px auto;
+      max-width: 900px;      /* centra el conjunto */
+    }
+
+    .pricing-container .card{
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      padding: 10px 12px;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+
+      /* igualamos tamaño en ambas */
+      width: var(--card-w);
+      height: var(--card-h);
+      margin: 0 auto;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .pricing-container .card:hover{ transform: translateY(-5px); }
+
+    .pricing-container .card h2{
+      margin: 0;
+      font-size: var(--fs-title);
+      line-height: 1.15;
+      color: #fff;
+    }
+
+    .pricing-container .price{
+      font-size: var(--fs-price);
+      font-weight: bold;
+      margin: 6px 0;
+      color: #ffd700;
+    }
+
+    .pricing-container .desc{
+      font-size: var(--fs-desc);
+      margin: 0 0 8px;
+      line-height: 1.25;
+      color: #f0f0f0;
+    }
+
+    .pricing-container .btn{
+      display: inline-block;
+      padding: 8px 16px;
+      background: #ffd700;
+      color: #0d1b3a;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-size: var(--fs-btn);
+      line-height: 1.2;
+    }
+
+    .pricing-container .btn:hover{ background: #ffcc00; }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #0d1b3a;
+    }
+    h1 { color: white; }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* Botón reutilizable de Inicio */
+    .btn-inicio {
+      background-color: #0099cc;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+    }
+    .btn-inicio:hover { background-color: #007a99; }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      background-color: #0099cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #007a99; }
+
+    #result {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #fff;
+      text-align:left;
+      max-width: 600px;
+      margin-left:auto;
+      margin-right:auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Selector de idioma (ES → EN) -->
+  <div style="position:fixed; top:15px; right:50px; z-index:9999; display:flex; gap:10px;">
+    <a href="/en/new-TLDs" hreflang="en">
+      <img src="/img/bandera-uk.png" alt="English" width="60" height="50" style="cursor:pointer;">
+    </a>
+  </div>
+
+  <h1>Nuevos TLDs</h1>
+  <p style="color:white">Descubre y asegura hoy mismo los dominios más novedosos y seguros.</p>
+
+  <input type="text" id="keyword" placeholder="Introduce una palabra clave">
+  <button onclick="searchTLDs()">Buscar</button>
+
+  <div id="result"></div>
+
+  <div style="text-align: center;">
+    <!-- Ajusta la ruta si tu inicio es diferente -->
+    <button class="btn-inicio" onclick="window.location.href='/es/esp-namegasm-pagina-inicial-basica'">
+      Volver a Inicio
+    </button>
+  </div>
+
+  <script>
+    function searchTLDs() {
+      const keyword = document.getElementById('keyword').value.trim();
+      const result = document.getElementById('result');
+
+      if (!keyword) {
+        result.innerHTML = "⚠ Introduce una palabra clave.";
+        return;
+      }
+
+      // Simulación: en una versión real se conectaría a una API de nuevos TLDs
+      result.innerHTML =
+        "Nuevos TLD disponibles para <b>" + keyword + "</b>:<br>" +
+        "- " + keyword + ".tech<br>" +
+        "- " + keyword + ".online<br>" +
+        "- " + keyword + ".xyz<br>" +
+        "- " + keyword + ".store";
+    }
+  </script>
+
+  <!-- Chatbot Universal -->
+  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+    <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+      💬 Chat
+    </button>
+    <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("chatbot-toggle");
+    const box = document.getElementById("chatbot-box");
+    const input = document.getElementById("chatbot-input");
+    const send = document.getElementById("chatbot-send");
+    const messages = document.getElementById("chatbot-messages");
+
+    toggle.addEventListener("click", () => {
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+
+    send.addEventListener("click", () => {
+      const text = input.value.trim();
+      if(text){
+        messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+
+  <div class="pricing-container">
+    <div class="card">
+      <h2>Versión Básica</h2>
+      <p class="price">Gratis</p>
+      <p class="desc">Lista informativa.</p>
+      <a href="#" class="btn">Acceder</a>
+    </div>
+
+    <div class="card">
+      <h2>Versión Total</h2>
+      <p class="price">2 €/mes</p>
+      <p class="desc">Acceso a reportes actualizados y alertas automáticas.</p>
+      <a href="#" class="btn">Suscribirse</a>
+    </div>
+  </div>
+
+</body>
+</html>

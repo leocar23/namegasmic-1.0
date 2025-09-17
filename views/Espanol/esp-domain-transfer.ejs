@@ -1,0 +1,181 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transferencia de Dominio - NameGasm</title>
+  <style>
+    .pricing-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 5px; margin: 10px 0; }
+    .card { background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); padding: 8px; text-align: center; transition: transform 0.2s ease-in-out; max-width: 250px; margin: 0 auto; }
+    .card:hover { transform: translateY(-5px); }
+    .card h3 { margin: 0; font-size: 14px; color: #fff; }
+    .price { font-size: 14px; font-weight: bold; margin: 10px 0; color: #ffd700; }
+    .desc { font-size: 12px; margin-bottom: 15px; color: #f0f0f0; }
+    .btn { display: inline-block; padding: 10px 20px; background: #ffd700; color: #0d1b3a; font-weight: bold; border-radius: 8px; text-decoration: none; transition: background 0.3s; }
+    .btn:hover { background: #ffcc00; }
+
+    body { margin: 0; font-family: Arial, sans-serif; background-color: #0d1b3a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background-color: #0d1b3a; padding: 1rem; text-align: center; border-bottom: 2px solid #142952; }
+    main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
+    h2 { margin-bottom: 1rem; }
+
+    .transfer-box { display: flex; flex-direction: column; gap: 0.5rem; max-width: 500px; width: 100%; }
+    .transfer-box input { padding: 0.75rem; font-size: 0.9rem; border: none; border-radius: 8px; outline: none; }
+    .transfer-box button { background-color: #ff9900; border: none; color: white; padding: 0.75rem; font-size: 0.95rem; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease; }
+    .transfer-box button:hover { background-color: #e68a00; }
+
+    .result { margin-top: 1.5rem; font-size: 1.05rem; min-height: 1.5rem; }
+
+    .btn-home { background-color: #ff9900; border: none; color: white; padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease; margin-top: 1rem; }
+    .btn-home:hover { background-color: #e68a00; }
+
+    footer { background-color: #0d1b3a; text-align: center; padding: 1rem; border-top: 2px solid #142952; font-size: 0.9rem; color: #ccc; }
+
+    #transferButton { font-size: 14px; padding: 8px 16px; width: 90%; max-width: 220px; display: block; margin: 10px auto; }
+    #backButton { font-size: 13px; padding: 6px 14px; width: 100%; max-width: 160px; display: block; margin: 8px auto; }
+
+    .lang-switch { position: fixed; top: 25px; right: 40px; z-index: 9999; display: flex; gap: 10px; }
+    .lang-switch img { width: 60px; height: 50px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- Selector de idioma -->
+<div class="lang-switch">
+  <a href="/en/migrate-domain">
+    <img src="/img/bandera-uk.png" alt="English">
+  </a>
+</div>
+
+<header>
+  <h1>NameGasm — Transferencia de Dominio</h1>
+</header>
+
+<main>
+  <h2>Transfiere tu dominio a NameGasm</h2>
+  <p>Introduce tu dominio y el código de autorización (Auth Code) para iniciar la transferencia.</p>
+
+  <div class="transfer-box">
+    <input type="text" id="domainInput" placeholder="ej.: midominio.com" />
+    <input type="text" id="authCodeInput" placeholder="Código de autorización (Auth Code)" />
+    <button id="transferButton" onclick="transferDomain()">Iniciar transferencia</button>
+  </div>
+
+  <div id="result" class="result"></div>
+
+  <div style="text-align: center;">
+    <!-- RUTA ABSOLUTA CORRECTA -->
+    <button id="backButton" class="btn-home" onclick="window.location.href='/es/esp-namegasm-pagina-inicial-basica'">
+      Volver al Inicio
+    </button>
+  </div>
+
+  <div class="pricing-container">
+    <div class="card">
+      <h3>Transferir</h3>
+      <p class="price">€9</p>
+      <a href="#" class="btn" id="btn-cta-transfer">Transferir</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2025 NameGasm. Todos los derechos reservados.
+</footer>
+
+<script>
+  function isValidDomain(d){
+    d = (d || '').trim().toLowerCase();
+    if(!d || d.length > 253 || d.indexOf('..') !== -1) return false;
+    return /^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i.test(d);
+  }
+
+  function createOrderAndGo(price, name){
+    return fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: [{ name, price, currency: "EUR", quantity: 1 }] })
+    })
+    .then(r => r.json())
+    .then(() => { window.location.href = '/cart'; });
+  }
+
+  async function transferDomain() {
+    const domain = document.getElementById('domainInput').value.trim();
+    const authCode = document.getElementById('authCodeInput').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    if (!domain || !authCode) {
+      resultDiv.textContent = "Escribe el dominio y el Auth Code.";
+      resultDiv.style.color = "yellow";
+      return;
+    }
+    if(!isValidDomain(domain)){
+      resultDiv.textContent = "Formato de dominio no válido.";
+      resultDiv.style.color = "yellow";
+      return;
+    }
+
+    resultDiv.textContent = `Procesando transferencia de ${domain}...`;
+    resultDiv.style.color = "lightblue";
+
+    try {
+      await createOrderAndGo(9.00, `Transferencia de dominio ${domain}`);
+    } catch (err) {
+      console.error(err);
+      resultDiv.textContent = "⚠️ No se pudo crear la orden.";
+      resultDiv.style.color = "red";
+    }
+  }
+
+  // Botón CTA tarjeta
+  document.addEventListener('DOMContentLoaded', () => {
+    const cta = document.getElementById('btn-cta-transfer');
+    if (cta) {
+      cta.addEventListener('click', (e) => {
+        e.preventDefault();
+        createOrderAndGo(9.00, 'Transferencia de dominio (sin dominio)').
+          catch(err => alert('Error al crear la orden: ' + err.message));
+      });
+    }
+  });
+</script>
+
+<!-- Chatbot -->
+<div id="chatbot-container" style="position:fixed; bottom:3px; right:20px; z-index:9999;">
+  <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   💬 Chat
+  </button>
+  <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    <div style="display:flex; border-top:1px solid #ccc;">
+      <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById("chatbot-toggle");
+  const box = document.getElementById("chatbot-box");
+  const input = document.getElementById("chatbot-input");
+  const send = document.getElementById("chatbot-send");
+  const messages = document.getElementById("chatbot-messages");
+
+  toggle.addEventListener("click", () => {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+
+  send.addEventListener("click", () => {
+    const text = input.value.trim();
+    if(text){
+      messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+      messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> ¡Gracias! Te respondo enseguida.</div>`;
+      input.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+  });
+</script>
+</body>
+</html>

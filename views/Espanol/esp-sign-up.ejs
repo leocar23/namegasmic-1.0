@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - NameGasm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0d1b3a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .signup-box {
+      background: white;
+      color: #0d1b3a;
+      padding: 32px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .signup-box h2 { margin-top: 0; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background-color: #0073e6;
+      color: white;
+      padding: 10px;
+      border: none;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    button:hover { background-color: #1a2b5c; }
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+    .error {
+      color: #b00020;
+      font-size: 13px;
+      min-height: 18px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Language switch -->
+  <div style="position:fixed; top:25px; right:35px; z-index:9999; display:flex; gap:10px;">
+    <a href="/es/esp-sign-up">
+      <img src="/img/bandera-es.png" alt="Español" style="width:60px; height:50px; cursor:pointer;">
+    </a>
+  </div>
+
+  <div class="signup-box">
+    <h2>Create Account</h2>
+    <form onsubmit="registerUser(event)">
+      <input type="text" id="username" placeholder="Username" required autocomplete="username" /> <!-- NUEVO: autocomplete -->
+      <input type="email" id="email" placeholder="Email" required autocomplete="email" /> <!-- NUEVO: autocomplete -->
+      <input type="password" id="password" placeholder="Password" required autocomplete="new-password" /> <!-- NUEVO: autocomplete -->
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" required autocomplete="new-password" /> <!-- NUEVO: autocomplete -->
+      <div id="errorBox" class="error"></div>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div class="hint">
+      Already have an account?
+      <a href="/en/sign-in">Sign In</a> <!-- NUEVO: ruta consistente con Express -->
+    </div>
+  </div>
+
+  <script>
+    async function registerUser(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const email    = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm  = document.getElementById("confirmPassword").value;
+      const errorBox = document.getElementById("errorBox");
+
+      errorBox.textContent = "";
+
+      // NUEVO: validaciones suaves
+      if (!username || !email || !password) {
+        errorBox.textContent = "Please fill all fields.";
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { // NUEVO
+        errorBox.textContent = "Invalid email format.";
+        return;
+      }
+      if (password.length < 6) { // NUEVO
+        errorBox.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+      if (password !== confirm) {
+        errorBox.textContent = "Passwords do not match.";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/users/sign-up", { // NUEVO: endpoint correcto
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: username,     // NUEVO: mapeo username -> name (backend)
+            email,
+            password
+          })
+        });
+        const data = await res.json();
+
+        if (res.ok && data && data.ok) {
+          // NUEVO: redirección a ruta Express existente
+          window.location.href = "/en/sign-in";
+        } else {
+          errorBox.textContent = (data && data.error) ? data.error : "Registration failed.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorBox.textContent = "Server unavailable.";
+      }
+    }
+  </script>
+
+  <!-- Chatbot Universal -->
+  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+    <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+      💬 Chat
+    </button>
+    <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("chatbot-toggle");
+    const box = document.getElementById("chatbot-box");
+    const input = document.getElementById("chatbot-input");
+    const send = document.getElementById("chatbot-send");
+    const messages = document.getElementById("chatbot-messages");
+
+    toggle.addEventListener("click", () => {
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+
+    send.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (text) {
+        messages.innerHTML += `<div style="margin-bottom:10px;"><strong>You:</strong> ${text}</div>`;
+        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thank you, your answer is on its way.</div>`;
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+
+</body>
+</html>

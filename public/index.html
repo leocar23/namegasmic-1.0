@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>namegasmic</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .btn-inicio{background-color:#ff9900;border:none;color:#fff;padding:.75rem 1.5rem;font-size:1rem;cursor:pointer;border-radius:8px;transition:background-color .3s;margin-top:1rem}
+    .btn-inicio:hover{background-color:#e68a00}
+    body{font-family:Arial,sans-serif;margin:0;padding:0;background:linear-gradient(to bottom,#0d1b3a,#1b2a59);color:#fff}
+    header{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.6);padding:10px 20px;position:fixed;top:0;width:100%;z-index:1000;flex-wrap:wrap;box-sizing:border-box}
+    nav ul{display:flex;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+    nav ul li{margin:0 15px}
+    nav ul li a{text-decoration:none;color:#fff;font-weight:bold;transition:color .3s}
+    nav ul li a:hover{color:#ffcc00}
+    .banner{background-image:url('https://picsum.photos/1920/1080?random=1');background-size:cover;background-position:center;background-attachment:fixed;height:58vh;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-size:2rem;text-shadow:2px 2px 5px #000;animation:fadeIn 2s ease-in-out;padding:0 15px;box-sizing:border-box}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+    .galeria{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;padding:5px;box-sizing:border-box}
+    .galeria img{width:100%;border-radius:10px;transition:transform .4s,box-shadow .4s}
+    .galeria img:hover{transform:scale(1.05);box-shadow:0 8px 15px rgba(0,0,0,.5)}
+    footer{background:rgba(0,0,0,.8);text-align:center;padding:15px;font-size:.9rem}
+    html,body{overflow-x:hidden}
+    @media(max-width:760px){.banner{background-attachment:scroll}}
+    @media(max-width:768px){header{flex-direction:column;align-items:flex-start}nav ul{flex-direction:column;width:100%;padding:10px 0}nav ul li{margin:8px 0}.banner{font-size:1.5rem;height:60vh}.galeria{padding:20px}}
+    @media(max-width:480px){.banner{font-size:1.2rem;height:auto;padding:40px 10px}.galeria{padding:15px;gap:10px}footer{font-size:.8rem;padding:10px}}
+  </style>
+</head>
+<body>
+
+<!-- Flag EN → ES (forzado) -->
+<div id="lang-flag" style="position:fixed; top:16px; right:140px; left:auto; z-index:2000;">
+  <a href="/en/">
+    <img src="/img/bandera-uk.png" alt="English" width="60" height="50">
+  </a>
+</div>
+
+<header>
+  <h1><i class="fas fa-gem"></i> namegasm</h1>
+  <nav>
+    <ul>
+      <li><a href="/es/esp-namegasm-pagina-inicial-basica"><i class="fas fa-home"></i> ¡Vamos!</a></li>
+      <li><a href="/es/esp-about-us"><i class="fas fa-info-circle"></i> Acerca de</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="banner">
+  <div>
+    <h2>Bienvenido a namegasm</h2>
+    <p>Los primeros pasos de tu proyecto.</p>
+  </div>
+</section>
+
+<section class="galeria">
+  <img src="https://picsum.photos/300/200?random=2" alt="Imagen 1">
+  <img src="https://picsum.photos/300/200?random=3" alt="Imagen 2">
+  <img src="https://picsum.photos/300/200?random=4" alt="Imagen 3">
+  <img src="https://picsum.photos/300/200?random=5" alt="Imagen 4">
+</section>
+
+<footer>
+  &copy; 2025 namegasm. Todos los derechos reservados.
+</footer>
+
+<!-- (opcional) Chatbot propio simple -->
+<div id="chatbot-container" style="position:fixed;bottom:3px;right:20px;z-index:9999;">
+  <button id="chatbot-toggle" style="background:#0073e6;color:#fff;border:none;padding:12px 18px;border-radius:50px;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.2);">💬 Chat</button>
+  <div id="chatbot-box" style="display:none;width:300px;height:400px;background:#fff;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.3);position:absolute;bottom:60px;right:0;overflow:hidden;">
+    <div style="background:#0073e6;color:#fff;padding:10px;font-weight:bold;">Asistente</div>
+    <div id="chatbot-messages" style="height:300px;overflow-y:auto;padding:10px;font-size:14px;"></div>
+    <div style="display:flex;border-top:1px solid #ccc;">
+      <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1;border:none;padding:10px;font-size:14px;">
+      <button id="chatbot-send" style="background:#0073e6;color:#fff;border:none;padding:10px;cursor:pointer;">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+  const toggle=document.getElementById("chatbot-toggle");
+  const box=document.getElementById("chatbot-box");
+  const input=document.getElementById("chatbot-input");
+  const send=document.getElementById("chatbot-send");
+  const messages=document.getElementById("chatbot-messages");
+  toggle.addEventListener("click",()=>{box.style.display=box.style.display==="none"?"block":"none";});
+  send.addEventListener("click",()=>{const t=input.value.trim();if(t){messages.innerHTML+=`<div style="margin-bottom:10px;"><strong>Tú:</strong> ${t}</div>`;messages.innerHTML+=`<div style="margin-bottom:10px;color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;input.value="";messages.scrollTop=messages.scrollHeight;}});
+</script>
+<script>
+  (function () {
+    var el = document.getElementById('lang-flag');
+    if (!el) return;
+    el.style.position = 'fixed';
+    el.style.top = '16px';
+    el.style.right = '1050px';
+    el.style.left = 'auto';
+    el.style.zIndex = '2000';
+  })();
+</script>
+
+</body>
+</html>

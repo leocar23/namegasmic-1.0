@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirmación de Pedido - NameGasmic</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#0d1b3a; margin:0; color:#fff;}
+    header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
+    .brand{font-weight:bold;}
+    .wrap{max-width:900px;margin:0 auto;padding:16px;}
+    .card{background:#fff;color:#0d1b3a;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.25);padding:16px;}
+    h1,h2{margin:0 0 12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px;}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;}
+    th{background:#f7f7f7;color:#0d1b3a}
+    .row{display:flex; gap:16px; flex-wrap:wrap;}
+    .col{flex:1; min-width:260px;}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#e9f5ff;color:#0d1b3a;font-weight:bold;font-size:12px;}
+    .btn{background:#0073e6;color:#fff;border:none;border-radius:8px;padding:12px 16px;cursor:pointer;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">NameGasm • Confirmación</div>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>¡Gracias por tu compra! 🎉</h1>
+      <div id="meta" style="margin:6px 0 12px;"></div>
+
+      <div class="row">
+        <div class="col">
+          <h2>Resumen</h2>
+          <div id="summary"></div>
+        </div>
+        <div class="col">
+          <h2>Facturación</h2>
+          <div id="billing"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="window.location.href='esp-namegasm-pagina-inicial-basica'">Volver al inicio</button>
+        <button class="btn" onclick="window.location.href='cart.html'">Ver carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const orderId = Number(qs.get('orderId'));
+
+    function money(n){ return `€${(Number(n)||0).toFixed(2)}`; }
+
+    async function loadOrder(){
+      try{
+        if(!orderId) return null;
+        const r = await fetch(`/api/orders/${orderId}`);
+        if(!r.ok) return null;
+        return await r.json();
+      }catch(e){ return null; }
+    }
+
+    function render(o){
+      const meta = document.getElementById('meta');
+      const summary = document.getElementById('summary');
+      const billing = document.getElementById('billing');
+
+      if(!o){
+        meta.innerHTML = 'No se encontró la orden.';
+        summary.innerHTML = '';
+        billing.innerHTML = '';
+        return;
+      }
+
+      meta.innerHTML = `
+        <div>Orden <b>#${o.id}</b> — <span class="pill">${o.status}</span></div>
+        ${o.paidAt ? `<div>Pagada: ${new Date(o.paidAt).toLocaleString()}</div>` : ''}
+      `;
+
+      const items = Array.isArray(o.items)?o.items:[];
+      let rows = '';
+      let subtotal = 0;
+      items.forEach(it=>{
+        const qty = Number(it.quantity||1);
+        const price = Number(it.price||0);
+        const line = qty*price;
+        subtotal += line;
+        rows += `<tr><td>${it.name||'-'}</td><td>${qty}</td><td>${money(price)} ${it.currency||'EUR'}</td><td>${money(line)}</td></tr>`;
+      });
+      const iva = subtotal * 0.21;
+      const total = subtotal + iva;
+
+      summary.innerHTML = `
+        <table>
+          <thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><td colspan="3" style="text-align:right;">Total (sin IVA)</td><td>${money(subtotal)}</td></tr>
+            <tr><td colspan="3" style="text-align:right;">IVA (21%)</td><td>${money(iva)}</td></tr>
+            <tr><td colspan="3" style="text-align:right;"><b>Total</b></td><td><b>${money(total)}</b></td></tr>
+          </tfoot>
+        </table>
+      `;
+
+      const b = o.billing || {};
+      billing.innerHTML = `
+        <div><b>Nombre:</b> ${b.name||'-'}</div>
+        <div><b>Email:</b> ${b.email||'-'}</div>
+        <div><b>Dirección:</b> ${b.address||'-'}</div>
+        <div><b>Ciudad:</b> ${b.city||'-'}</div>
+        <div><b>CP:</b> ${b.zip||'-'}</div>
+        <div><b>País:</b> ${b.country||'-'}</div>
+        <div><b>VAT:</b> ${b.vat||'-'}</div>
+      `;
+    }
+
+    (async function(){
+      const o = await loadOrder();
+      render(o);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Darse de baja - NameGasm</title>
+    <style>
+        body {
+            background-color: #0d1b3a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .unsubscribe-box {
+            background: #112b5c;
+            padding: 30px;
+            border-radius: 12px;
+            display: inline-block;
+            max-width: 400px;
+        }
+        input, textarea, select, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        button {
+            background: #ff4c4c;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #e63c3c;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 14px;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+
+	<div style="position:fixed; top:25px; right:35px; z-index:9999; display:flex; gap:10px;">
+	<a href="/en/sign-out">
+	  <img src="/img/bandera-uk.png" alt="English" style="width:60px; height:50px; cursor:pointer;">
+	</a>	
+	</div>
+    <h1>Darse de baja de NameGasm</h1>
+    <div class="unsubscribe-box">
+        <p>Introduce tu correo para eliminar tu cuenta y todos tus datos asociados.</p>
+        
+        <form action="procesar_baja.php" method="POST">
+            <!-- Correo -->
+            <input type="email" name="email" placeholder="Tu correo" required>
+
+            <!-- Pregunta corta -->
+            <label for="motivo">¿Por qué has decidido darte de baja?</label>
+            <select name="motivo" id="motivo">
+                <option value="">Selecciona una opción</option>
+                <option value="No necesito el servicio">Ya no necesito el servicio</option>
+                <option value="Precio alto">El precio es demasiado alto</option>
+                <option value="Encontré otra alternativa">He encontrado otra alternativa</option>
+                <option value="Dificultad de uso">Me resultó complicado de usar</option>
+                <option value="Falta de funciones">Faltan funciones que necesito</option>
+                <option value="Otro">Otro</option>
+            </select>
+
+            <!-- Comentarios libres -->
+            <label for="comentarios">Por favor, cuéntanos brevemente tu experiencia:</label>
+            <textarea name="comentarios" id="comentarios" placeholder="Tu opinión nos ayudará a mejorar (opcional)"></textarea>
+
+            <!-- Botón de confirmación -->
+            <button type="submit">Confirmar baja</button>
+        </form>
+    </div>
+	
+	<!-- Chatbot Universal -->
+		<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  		<button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   	 💬 Chat
+  		</button>
+  		<div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    		<div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    		<div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    		<div style="display:flex; border-top:1px solid #ccc;">
+     	 <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      	<button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    	</div>
+  	</div>
+	</div>
+
+	<script>
+  		const toggle = document.getElementById("chatbot-toggle");
+  		const box = document.getElementById("chatbot-box");
+  		const input = document.getElementById("chatbot-input");
+  		const send = document.getElementById("chatbot-send");
+  		const messages = document.getElementById("chatbot-messages");
+
+  	toggle.addEventListener("click", () => {
+    	box.style.display = box.style.display === "none" ? "block" : "none";
+  	});
+
+ 		 send.addEventListener("click", () => {
+   		 const text = input.value.trim();
+   		 if(text){
+     		 messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+    		  messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+    		  input.value = "";
+    		  messages.scrollTop = messages.scrollHeight;
+  	  }
+  	});
+	</script>
+	
+</body>
+</html>

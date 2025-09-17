@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - NameGasm</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#0d1b3a; margin:0; color:#fff;}
+    header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
+    .brand{font-weight:bold;}
+    .lang-switch img{width:48px;height:36px;cursor:pointer;}
+    .wrap{max-width:980px;margin:0 auto;padding:16px;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .card{background:#fff;color:#0d1b3a;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.25);padding:16px;}
+    h1,h2{margin:0 0 12px}
+    label{display:block;font-size:14px;margin:8px 0 4px;}
+    input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;}
+    table{width:100%; border-collapse:collapse; margin-top:8px;}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;}
+    th{background:#f7f7f7;color:#0d1b3a}
+    .btn{background:#0073e6;color:#fff;border:none;border-radius:8px;padding:12px 16px;cursor:pointer;}
+    .btn:disabled{opacity:.5;cursor:not-allowed;}
+    .btn-alt{background:#ffd700;color:#0d1b3a;}
+    .totals{margin-top:8px}
+    .totals div{display:flex;justify-content:space-between;margin:4px 0;}
+    .note{font-size:12px;opacity:.8;margin-top:8px;}
+    .terms{display:flex;gap:8px;align-items:flex-start;margin-top:8px;font-size:14px;color:#0d1b3a;}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">NameGasm • Checkout</div>
+    <div class="lang-switch">
+      <!-- Switch to Spanish -->
+      <a href="/checkout.html"><img src="/img/bandera-es.png" alt="Español"></a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="grid">
+      <!-- Left: Billing -->
+      <div class="card">
+        <h2>Billing details</h2>
+        <form id="billingForm">
+          <label>Full name *</label>
+          <input type="text" id="name" required>
+
+          <label>Email *</label>
+          <input type="email" id="email" required>
+
+          <label>Address</label>
+          <input type="text" id="address" placeholder="Street, number, apt">
+
+          <label>City</label>
+          <input type="text" id="city">
+
+          <label>ZIP / Postal code</label>
+          <input type="text" id="zip">
+
+          <label>Country</label>
+          <select id="country">
+            <option value="">Select…</option>
+            <option value="ES">Spain</option>
+            <option value="PT">Portugal</option>
+            <option value="FR">France</option>
+            <option value="IT">Italy</option>
+            <option value="DE">Germany</option>
+            <option value="GB">United Kingdom</option>
+            <option value="US">United States</option>
+          </select>
+
+          <label>VAT / Tax ID (optional)</label>
+          <input type="text" id="vat">
+
+          <div class="terms">
+            <input type="checkbox" id="terms">
+            <label for="terms">I accept the <a href="#" target="_blank">Terms & Conditions</a> and the <a href="#" target="_blank">Privacy Policy</a>.</label>
+          </div>
+
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn" type="button" id="btn-pay">Confirm order</button>
+            <button class="btn btn-alt" type="button" onclick="window.location.href='/en/cart.html'">Back to cart</button>
+          </div>
+          <div class="note">* Required fields</div>
+        </form>
+      </div>
+
+      <!-- Right: Summary -->
+      <div class="card">
+        <h2>Order summary</h2>
+        <div id="orderMeta" style="font-size:14px; opacity:.8; margin-bottom:8px;"></div>
+        <div id="summaryArea"></div>
+        <div class="totals" id="totalsArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentOrder = null;
+    function money(n){ return `€${(Number(n)||0).toFixed(2)}`; }
+
+    async function getCurrentOrder(){
+      try{
+        const res = await fetch('/api/orders/current');
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){ return null; }
+    }
+
+    function renderSummary(order){
+      const meta = document.getElementById('orderMeta');
+      const summary = document.getElementById('summaryArea');
+      const totals = document.getElementById('totalsArea');
+
+      if(!order){
+        meta.textContent = '';
+        summary.innerHTML = '<div>No active order.</div>';
+        totals.innerHTML = '';
+        document.getElementById('btn-pay').disabled = true;
+        return;
+      }
+      const items = Array.isArray(order.items) ? order.items : [];
+      if(items.length === 0){
+        meta.textContent = `Order #${order.id} — Status: ${order.status}`;
+        summary.innerHTML = '<div>Your cart is empty.</div>';
+        totals.innerHTML = '';
+        document.getElementById('btn-pay').disabled = true;
+        return;
+      }
+
+      meta.textContent = `Order #${order.id} — Status: ${order.status} — ${new Date(order.createdAt).toLocaleString()}`;
+
+      let rows = '';
+      let subtotal = 0;
+      items.forEach((it)=>{
+        const qty = Number(it.quantity || 1);
+        const price = Number(it.price || 0);
+        const line = qty * price;
+        subtotal += line;
+        rows += `
+          <tr>
+            <td>${it.name || '-'}</td>
+            <td>${qty}</td>
+            <td>${money(price)} ${it.currency || 'EUR'}</td>
+            <td>${money(line)}</td>
+          </tr>
+        `;
+      });
+
+      summary.innerHTML = `
+        <table>
+          <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      const vat = subtotal * 0.21;
+      const total = subtotal + vat;
+      totals.innerHTML = `
+        <div><span>Total (excl. VAT)</span><span>${money(subtotal)}</span></div>
+        <div><span>VAT (21%)</span><span>${money(vat)}</span></div>
+        <div style="font-weight:bold; font-size:18px;"><span>Total to pay</span><span>${money(total)}</span></div>
+      `;
+
+      document.getElementById('btn-pay').disabled = false;
+    }
+
+    async function load(){
+      currentOrder = await getCurrentOrder();
+      renderSummary(currentOrder);
+    }
+
+    document.getElementById('btn-pay').addEventListener('click', async ()=>{
+      if(!currentOrder){ alert('No active order.'); return; }
+
+      const billing = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        zip: document.getElementById('zip').value.trim(),
+        country: document.getElementById('country').value,
+        vat: document.getElementById('vat').value.trim()
+      };
+      const acceptTerms = document.getElementById('terms').checked;
+
+      if(!billing.name || !billing.email){
+        alert('Please fill in Name and Email.');
+        return;
+      }
+      if(!acceptTerms){
+        alert('You must accept the terms to continue.');
+        return;
+      }
+
+      try{
+        const res = await fetch(`/api/orders/${currentOrder.id}/checkout`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ billing, acceptTerms })
+        });
+        if(!res.ok){
+          const err = await res.json().catch(()=> ({}));
+          throw new Error(err.error || 'Checkout failed');
+        }
+        // Go to mock payment
+        window.location.href = `/en/payment.html?orderId=${encodeURIComponent(currentOrder.id)}`;
+      }catch(e){ alert(e.message); }
+    });
+
+    load();
+  </script>
+</body>
+</html>

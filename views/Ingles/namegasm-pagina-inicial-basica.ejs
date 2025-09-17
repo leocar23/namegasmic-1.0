@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>namegasmic - Start</title>
+  <style>
+  /* Reusable Home button */
+  .btn-home {
+    background-color: #ff9900; border: none; color: white;
+    padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer;
+    border-radius: 8px; transition: background-color 0.3s ease; margin-top: 1rem;
+  }
+  .btn-home:hover { background-color: #e68a00; }
+
+  body { margin: 0; font-family: Arial, sans-serif; background-color: #0d1b3a; }
+  header {
+    background-color: #0d1b3a; color: red; padding: 1rem;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  header .logo { display: flex; align-items: center; gap: 0.5rem; }
+  header svg { width: 40px; height: 40px; }
+
+  nav { background-color: #142952; }
+  nav ul {
+    list-style: none; margin: 0; padding: 5px; display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 0.5rem;
+  }
+  nav ul li { position: relative; }
+  nav ul li a {
+    display: flex; padding: 35px; color: white; text-decoration: none; cursor: pointer;
+  }
+  nav ul li:hover { background-color: #1f3e73; }
+
+  /* Submenus */
+  nav ul li ul {
+    display: none; position: absolute; background-color: #1f3e73;
+    min-width: 200px; list-style: none; padding: 0; margin: 0; z-index: 1000;
+  }
+  nav ul li ul li a { padding: 0.5rem; color: white; }
+  nav ul li ul li a:hover { background-color: #284f91; }
+  nav ul li.show > ul { display: block; }
+
+  /* Footer */
+  footer {
+    background-color: #0d1b3a; color: white; padding: 2rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem;
+  }
+  footer h4 { margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; }
+  footer ul { list-style: none; padding: 0; margin: 0; }
+  footer ul li { margin-bottom: 0.5rem; }
+  footer ul li a { color: #ccc; text-decoration: none; }
+  footer ul li a:hover { color: white; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    nav ul { flex-direction: column; }
+    nav ul li ul { position: static; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- Language switch: EN -> ES -->
+<div style="position:fixed; top:135px; right:35px; z-index:9999; display:flex; gap:10px;">
+  <a href="/es/esp-namegasm-pagina-inicial-basica">
+    <img src="/img/bandera-es.png" alt="Español" style="width:60px; height:50px; cursor:pointer;">
+  </a>
+</div>
+
+<header>
+  <button onclick="window.location.href='/en/sign-in'"
+    style="background-color:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+    Sign In
+  </button>
+
+  <button onclick="window.location.href='/en/sign-up'"
+    style="background-color:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+    Sign Up
+  </button>
+
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="30" fill="#ff9900"/>
+      <text x="32" y="38" font-size="20" text-anchor="middle" fill="white">N</text>
+    </svg>
+    <h1>namegasm</h1>
+  </div>
+
+  <div>
+    <button onclick="window.location.href='/en/sign-out'"
+      style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Sign Out
+    </button>
+  </div>
+
+  <!-- Exit -->
+  <div>
+    <button onclick="window.location.href='https://www.google.com'"
+      style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Exit
+    </button>
+  </div>
+</header>
+
+<nav>
+  <ul id="mainMenu">
+    <li>
+      <a>Domains</a>
+      <ul>
+        <li><a href="/en/search-domain">Search Domain</a></li>
+        <li><a href="/en/new-tlds">New TLDs</a></li>
+        <li><a href="/en/personal-domains">Personal Domains</a></li>
+        <li><a href="/en/name-generator">Name Generator</a></li>
+        <li><a href="/en/premium-dns" class="button">Premium DNS</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Security</a>
+      <ul>
+        <li><a href="/en/ssl-certificates" class="button">SSL Certificates</a></li>
+        <li><a href="/en/domain-privacy" class="button">Domain Privacy</a></li>
+        <li><a href="/en/website-security" class="button">Website Security</a></li>
+        <li><a href="/en/cdn" class="button">CDN</a></li>
+        <li><a href="/en/2FA" class="button">2FA</a></li>
+        <li><a href="/en/anti-spam-protection" class="button">Anti-Spam Protection</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Hosting</a>
+      <ul>
+        <li><a href="/en/shared-hosting" class="button">Shared Hosting</a></li>
+        <li><a href="/en/wordpress-hosting" class="button">WordPress Hosting</a></li>
+        <li><a href="/en/reseller-hosting" class="button">Reseller Hosting</a></li>
+        <li><a href="/en/dedicated-servers" class="button">Dedicated Servers</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Transfer to Us</a>
+      <ul>
+        <li><a href="/en/migrate-to-namegasm" class="button">Migrate to namegasm</a></li>
+        <!-- Puedes usar /en/migrate-domain; también dejé alias /en/domain-transfer en el router -->
+        <li><a href="/en/migrate-domain">Migrate Domain</a></li>
+        <li><a href="/en/migrate-hosting">Migrate Hosting</a></li>
+        <li><a href="/en/migrate-wordpress">Migrate WordPress</a></li>
+        <li><a href="/en/migrate-email">Migrate E-mail</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>WordPress</a>
+      <ul>
+        <li><a href="/en/migrate-to-wordpress">Migrate to WordPress</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Help</a>
+      <ul>
+        <li><a href="/en/how-to">How To</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Contact Us</a>
+      <ul>
+        <li><a href="/en/contact-us">E-mail</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<main style="padding: 2rem; text-align: center; color: white">
+  <h2>Welcome, let's make your project real!</h2>
+  <p>Explore the menu to see available sections.</p>
+</main>
+
+<div style="text-align: center;">
+  <button class="btn-home" onclick="window.location.href='/en/namegasm-basica'">
+    Go Back
+  </button>
+</div>
+
+<footer>
+  <div></div>
+</footer>
+
+<script>
+  document.querySelectorAll('#mainMenu > li > a').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const parent = btn.parentElement;
+      parent.classList.toggle('show');
+      // Close others
+      document.querySelectorAll('#mainMenu > li').forEach(li => {
+        if(li !== parent) li.classList.remove('show');
+      });
+    });
+  });
+</script>
+
+<!-- Simple Chatbot -->
+<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   💬 Chat
+  </button>
+  <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
+    <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px; color:#0d1b3a;"></div>
+    <div style="display:flex; border-top:1px solid #ccc;">
+      <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+  const toggle = document.getElementById("chatbot-toggle");
+  const box = document.getElementById("chatbot-box");
+  const input = document.getElementById("chatbot-input");
+  const send = document.getElementById("chatbot-send");
+  const messages = document.getElementById("chatbot-messages");
+
+  toggle.addEventListener("click", () => {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+
+  send.addEventListener("click", () => {
+    const text = input.value.trim();
+    if(text){
+      messages.innerHTML += `<div style="margin-bottom:10px;"><strong>You:</strong> ${text}</div>`;
+      messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thank you, your answer is on its way.</div>`;
+      input.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+  });
+</script>
+
+</body>
+</html>
+

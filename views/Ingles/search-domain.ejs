@@ -1,0 +1,34 @@
+﻿const express = require("express");
+const router = express.Router();
+
+// Si conectas Mongo aquí, mantenlo:
+const connectDB = require("../db");
+connectDB();
+
+/* ===== EN ===== */
+router.get("/en/search-domain", (req, res) => {
+  res.render("Ingles/search-domain", { title: "Search Domain" });
+});
+router.get("/en/namegasm-basica", (req, res) => {
+  res.render("Ingles/namegasm-basica", { title: "NameGasm Home" });
+});
+router.get("/en/cart", (req, res) => {
+  res.render("Ingles/cart", { title: "Cart" });
+});
+
+/* ===== ES (por si haces switch) ===== */
+router.get("/es/search-domain", (req, res) => {
+  res.render("Espanol/esp-search-domain", { title: "Buscar Dominio" });
+});
+router.get("/es/namegasm-basica", (req, res) => {
+  res.render("Espanol/esp-namegasm-basica", { title: "NameGasm Inicio" });
+});
+router.get("/es/cart", (req, res) => {
+  res.render("Espanol/esp-cart", { title: "Carrito" });
+});
+
+/* ===== Enlaces “antiguos” sin prefijo: redirigen (opcional) ===== */
+router.get("/namegasm-basica", (req, res) => res.redirect("/es/namegasm-basica"));
+router.get("/namegasm-pagina-inicial-basica", (req, res) => res.redirect("/es/namegasm-pagina-inicial-basica"));
+
+module.exports = router;

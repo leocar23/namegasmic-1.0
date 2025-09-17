@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - NameGasmic</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#0d1b3a; margin:0; color:#fff;}
+    header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
+    .brand{font-weight:bold;}
+    .lang-switch img{width:48px;height:36px;cursor:pointer;}
+    .wrap{max-width:900px;margin:0 auto;padding:16px;}
+    .card{background:#fff;color:#0d1b3a;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.25);padding:16px;}
+    h1{margin:0 0 12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px;}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;}
+    th{background:#f7f7f7;color:#0d1b3a}
+    tfoot td{font-weight:bold;}
+    .qty-controls{display:flex;gap:6px; align-items:center;}
+    .btn{background:#0073e6;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;}
+    .btn:disabled{opacity:.5;cursor:not-allowed;}
+    .btn-alt{background:#ffd700;color:#0d1b3a;}
+    .row-actions{display:flex;gap:8px;}
+    .empty{padding:16px;background:#fff;color:#0d1b3a;border-radius:10px;margin-top:12px;}
+    .top-actions{display:flex;gap:8px; margin:10px 0;}
+    .mini{padding:4px 8px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">NameGasm • Cart</div>
+    <div class="lang-switch">
+      <!-- Switch to Spanish -->
+      <a href="/cart.html"><img src="/img/bandera-es.png" alt="Español"></a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Your cart</h1>
+      <div id="orderMeta" style="font-size:14px; opacity:.8;"></div>
+
+      <div class="top-actions">
+        <button class="btn" id="btn-refresh">Refresh</button>
+        <button class="btn" id="btn-clear" title="Clear cart">Clear</button>
+      </div>
+
+      <div id="cartArea"></div>
+
+      <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn" onclick="window.location.href='namegasm-basic-home'">Back to Home</button>
+        <button class="btn btn-alt" id="btn-checkout">Go to checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentOrder = null;
+    function money(n){ return `€${(Number(n)||0).toFixed(2)}`; }
+
+    async function getCurrentOrder(){
+      try{
+        const res = await fetch('/api/orders/current');
+        if(!res.ok) return null;
+        return await res.json();
+      }catch(e){
+        console.error(e);
+        return null;
+      }
+    }
+
+    async function updateQty(orderId, index, quantity){
+      try{
+        const res = await fetch(`/api/orders/${orderId}/item/${index}`, {
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ quantity })
+        });
+        if(!res.ok) throw new Error('Could not update quantity');
+        return await res.json();
+      }catch(e){ alert(e.message); }
+    }
+
+    async function deleteItem(orderId, index){
+      try{
+        const res = await fetch(`/api/orders/${orderId}/item/${index}`, { method:'DELETE' });
+        if(!res.ok) throw new Error('Could not remove item');
+        return await res.json();
+      }catch(e){ alert(e.message); }
+    }
+
+    async function clearOrder(orderId){
+      try{
+        const res = await fetch(`/api/orders/${orderId}/items`, { method:'DELETE' });
+        if(!res.ok) throw new Error('Could not clear cart');
+        return await res.json();
+      }catch(e){ alert(e.message); }
+    }
+
+    function attachRowHandlers(){
+      document.querySelectorAll('[data-action="inc"],[data-action="dec"]').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          const idx = Number(e.currentTarget.dataset.index);
+          const action = e.currentTarget.dataset.action;
+          const it = currentOrder.items[idx];
+          const newQty = Math.max(0, (Number(it.quantity)||1) + (action==='inc'?1:-1));
+          await updateQty(currentOrder.id, idx, newQty);
+          await loadCart();
+        });
+      });
+      document.querySelectorAll('[data-action="del"]').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          const idx = Number(e.currentTarget.dataset.index);
+          await deleteItem(currentOrder.id, idx);
+          await loadCart();
+        });
+      });
+    }
+
+    function renderCart(order){
+      const area = document.getElementById('cartArea');
+      const meta = document.getElementById('orderMeta');
+
+      if(!order){
+        meta.textContent = '';
+        area.innerHTML = `<div class="empty">🛒 Your cart is empty.</div>`;
+        document.getElementById('btn-checkout').disabled = true;
+        document.getElementById('btn-clear').disabled = true;
+        return;
+      }
+
+      const items = Array.isArray(order.items) ? order.items : [];
+      if(items.length === 0){
+        meta.textContent = `Order #${order.id} — Status: ${order.status}`;
+        area.innerHTML = `<div class="empty">🛒 Your cart is empty.</div>`;
+        document.getElementById('btn-checkout').disabled = true;
+        document.getElementById('btn-clear').disabled = false;
+        return;
+      }
+
+      meta.textContent = `Order #${order.id} — Status: ${order.status} — ${new Date(order.createdAt).toLocaleString()}`;
+
+      let rows = '';
+      let total = 0;
+      items.forEach((it, idx) => {
+        const qty = Number(it.quantity || 1);
+        const price = Number(it.price || 0);
+        const line = price * qty;
+        total += line;
+
+        rows += `
+          <tr>
+            <td>${it.name || '-'}</td>
+            <td>${money(price)} ${it.currency || 'EUR'}</td>
+            <td>
+              <div class="qty-controls">
+                <button class="btn mini" data-action="dec" data-index="${idx}">−</button>
+                <span>${qty}</span>
+                <button class="btn mini" data-action="inc" data-index="${idx}">＋</button>
+              </div>
+            </td>
+            <td>${money(line)}</td>
+            <td class="row-actions">
+              <button class="btn mini" data-action="del" data-index="${idx}">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      const vat = total * 0.21; // VAT 21%
+      const grand = total + vat;
+
+      area.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr><td colspan="3" style="text-align:right;">Total (excl. VAT)</td><td>${money(total)}</td><td></td></tr>
+            <tr><td colspan="3" style="text-align:right;">VAT (21%)</td><td>${money(vat)}</td><td></td></tr>
+            <tr><td colspan="3" style="text-align:right;"><b>Total</b></td><td><b>${money(grand)}</b></td><td></td></tr>
+          </tfoot>
+        </table>
+      `;
+
+      attachRowHandlers();
+      document.getElementById('btn-checkout').disabled = false;
+      document.getElementById('btn-clear').disabled = false;
+    }
+
+    async function loadCart(){
+      currentOrder = await getCurrentOrder();
+      renderCart(currentOrder);
+    }
+
+    document.getElementById('btn-refresh').addEventListener('click', loadCart);
+    document.getElementById('btn-clear').addEventListener('click', async ()=>{
+      if(!currentOrder){ return; }
+      if(!confirm('Clear all items from cart?')) return;
+      await clearOrder(currentOrder.id);
+      await loadCart();
+    });
+    document.getElementById('btn-checkout').addEventListener('click', () => {
+      if(!currentOrder){ alert('Nothing to checkout.'); return; }
+      window.location.href = '/en/checkout.html';
+    });
+
+    loadCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment - NameGasmic</title>
+  <style>
+    body{font-family:Arial, sans-serif; background:#0d1b3a; margin:0; color:#fff;}
+    header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
+    .brand{font-weight:bold;}
+    .wrap{max-width:900px;margin:0 auto;padding:16px;}
+    .card{background:#fff;color:#0d1b3a;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.25);padding:16px;}
+    h1,h2{margin:0 0 12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px;}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;}
+    th{background:#f7f7f7;color:#0d1b3a}
+    .totals{margin-top:8px}
+    .totals div{display:flex;justify-content:space-between;margin:4px 0;}
+    .btn{background:#0073e6;color:#fff;border:none;border-radius:8px;padding:12px 16px;cursor:pointer;}
+    .btn-alt{background:#ffd700;color:#0d1b3a;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .note{font-size:12px;opacity:.8;margin-top:8px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">NameGasm • Payment (Mock)</div>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>Confirm payment</h1>
+      <div id="orderMeta" style="font-size:14px; opacity:.8; margin-bottom:8px;"></div>
+      <div id="summaryArea"></div>
+      <div class="totals" id="totalsArea"></div>
+
+      <div class="actions">
+        <button class="btn" id="btn-pay">Pay now (mock)</button>
+        <button class="btn btn-alt" id="btn-cancel">Cancel and go to cart</button>
+      </div>
+      <div class="note">
+        This is a simulated flow. In production you would initialize Stripe / PayPal / etc. here.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const orderId = Number(qs.get('orderId'));
+    let order = null;
+
+    function money(n){ return `€${(Number(n)||0).toFixed(2)}`; }
+
+    async function fetchOrder() {
+      try{
+        if (orderId) {
+          const r = await fetch(`/api/orders/${orderId}`);
+          if (!r.ok) return null;
+          return await r.json();
+        }
+        const r = await fetch('/api/orders/current');
+        if (!r.ok) return null;
+        return await r.json();
+      }catch(e){ return null; }
+    }
+
+    function render(o){
+      const meta = document.getElementById('orderMeta');
+      const summary = document.getElementById('summaryArea');
+      const totals = document.getElementById('totalsArea');
+
+      if(!o){
+        meta.textContent = '';
+        summary.innerHTML = '<div>Could not load the order.</div>';
+        totals.innerHTML = '';
+        document.getElementById('btn-pay').disabled = true;
+        return;
+      }
+      if (o.status !== 'pending_payment') {
+        meta.textContent = `Order #${o.id} — Status: ${o.status}`;
+        summary.innerHTML = '<div>The order is not pending payment.</div>';
+        totals.innerHTML = '';
+        document.getElementById('btn-pay').disabled = true;
+        return;
+      }
+
+      const items = Array.isArray(o.items) ? o.items : [];
+      let rows = '';
+      let subtotal = 0;
+      items.forEach((it)=>{
+        const qty = Number(it.quantity || 1);
+        const price = Number(it.price || 0);
+        const line = qty * price;
+        subtotal += line;
+        rows += `
+          <tr>
+            <td>${it.name || '-'}</td>
+            <td>${qty}</td>
+            <td>${money(price)} ${it.currency || 'EUR'}</td>
+            <td>${money(line)}</td>
+          </tr>
+        `;
+      });
+
+      meta.textContent = `Order #${o.id} — ${new Date(o.createdAt).toLocaleString()} — pending_payment`;
+      summary.innerHTML = `
+        <table>
+          <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+
+      const vat = subtotal * 0.21;
+      const total = subtotal + vat;
+      totals.innerHTML = `
+        <div><span>Total (excl. VAT)</span><span>${money(subtotal)}</span></div>
+        <div><span>VAT (21%)</span><span>${money(vat)}</span></div>
+        <div style="font-weight:bold; font-size:18px;"><span>Total</span><span>${money(total)}</span></div>
+      `;
+    }
+
+    async function init(){
+      order = await fetchOrder();
+      render(order);
+    }
+
+    document.getElementById('btn-pay').addEventListener('click', async ()=>{
+      if(!order){ alert('No order loaded'); return; }
+      try{
+        const r = await fetch(`/api/orders/${order.id}/pay`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method:'mock' }) });
+        if(!r.ok){
+          const e = await r.json().catch(()=> ({}));
+          throw new Error(e.error || 'Payment failed');
+        }
+        window.location.href = `/en/order-confirmation.html?orderId=${encodeURIComponent(order.id)}`;
+      }catch(e){ alert(e.message); }
+    });
+
+    document.getElementById('btn-cancel').addEventListener('click', async ()=>{
+      if(!order){ window.location.href = '/en/cart.html'; return; }
+      try{ await fetch(`/api/orders/${order.id}/cancel-payment`, { method:'POST' }); }catch(e){}
+      window.location.href = '/en/cart.html';
+    });
+
+    init();
+  </script>
+</body>
+</html>

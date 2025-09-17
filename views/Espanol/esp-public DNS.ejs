@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public DNS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #0d1b3a;
+        }
+        h1 {
+            color: white;
+        }
+        input {
+            padding: 10px;
+            width: 300px;
+            margin-top: 20px;
+        }
+		/* Botón reutilizable de Inicio */
+			.btn-inicio {
+			background-color: #0073e6;
+			border: none;
+			color: white;
+			padding: 0.75rem 1.5rem;
+			font-size: 1rem;
+			cursor: pointer;
+			border-radius: 8px;
+			transition: background-color 0.3s ease;
+			margin-top: 1rem;
+		}
+		.btn-inicio:hover {
+			background-color: #005bb5;
+		}
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            cursor: pointer;
+			border-radius: 8px;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+	<!-- Selector de idiomas universal -->
+		<a href="/en/namegasm-pagina-inicial-basica">
+			<img src="/img/bandera-uk.png" alt="English" style="width:60px; height:50px; cursor:pointer;">
+		</a>
+
+    <h1>DNS Público</h1>
+    <p style="color:white">Evalúe y configure su conexión con nuestro rápido y seguro servicio público de DNS.</p>
+    <input type="text" id="dnsInput" placeholder="Introduzca un dominio a convertir">
+    <br>
+    <button onclick="resolveDNS()">Covertir</button>
+    <div id="result"></div>
+	
+	<div style="text-align: center;">
+	<button class="btn-inicio" onclick="window.location.href='esp-namegasm-pagina-inicial-basica'">
+    Volver a Inicio
+	</button>
+	</div>
+
+
+    <script>
+        function resolveDNS() {
+            let domain = document.getElementById('dnsInput').value.trim();
+            if (domain === "") {
+                document.getElementById('result').innerHTML = "Please enter a domain name.";
+                return;
+            }
+            document.getElementById('result').innerHTML = "🌐 Resolving DNS for: " + domain + " ... (simulation)";
+        }
+    </script>
+	<!-- Chatbot Universal -->
+		<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  		<button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   	 💬 Chat
+  		</button>
+  		<div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    		<div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    		<div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    		<div style="display:flex; border-top:1px solid #ccc;">
+     	 <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      	<button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    	</div>
+  	</div>
+	</div>
+
+	<script>
+  		const toggle = document.getElementById("chatbot-toggle");
+  		const box = document.getElementById("chatbot-box");
+  		const input = document.getElementById("chatbot-input");
+  		const send = document.getElementById("chatbot-send");
+  		const messages = document.getElementById("chatbot-messages");
+
+  	toggle.addEventListener("click", () => {
+    	box.style.display = box.style.display === "none" ? "block" : "none";
+  	});
+
+ 		 send.addEventListener("click", () => {
+   		 const text = input.value.trim();
+   		 if(text){
+     		 messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+    		  messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+    		  input.value = "";
+    		  messages.scrollTop = messages.scrollHeight;
+  	  }
+  	});
+	</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+	<html>
+	<head>
+	   <title></title>
+	   <meta charset="UTF-8">
+	   <style>
+/* Botón reutilizable de Inicio */
+	.btn-inicio {
+	  	background-color: #ff9900;
+	  	border: none;
+ 	 	color: white;
+ 	 	padding: 0.75rem 1.5rem;
+ 	 	font-size: 1rem;
+  		cursor: pointer;
+  		border-radius: 8px;
+  		transition: background-color 0.3s ease;
+  		margin-top: 1rem;
+	}
+	.btn-inicio:hover {
+  	background-color: #e68a00;
+	}
+	   
+	   </style>
+	</head>
+	<body>
+	
+	<section class="about-us" style="max-width:900px; margin:0 auto; padding:40px; font-family:Arial, sans-serif; line-height:1.6;">
+  <h1 style="color:#0d1b3a; text-align:center; margin-bottom:20px;">Sobre Nosotros</h1>
+  
+  <p>
+    Bienvenido a <strong>NameGasm</strong>, una plataforma creada para hacer que la búsqueda de dominios, el hosting y las herramientas digitales sean simples, rápidas y accesibles para todos.
+  </p>
+
+  <h2 style="color:#0d1b3a; margin-top:30px;">Quiénes Somos</h2>
+  <p>
+    Somos un equipo apasionado por los grandes avances tecnológicos. Nuestro objetivo es ayudar a personas y empresas a crecer en línea con las herramientas y recursos adecuados.
+  </p>
+
+  <h2 style="color:#0d1b3a; margin-top:30px;">Qué Hacemos</h2>
+  <p>
+    En NameGasm puedes encontrar nombres de dominio, servicios de hosting y acceder a herramientas de crecimiento digital, todo diseñado para impulsar tu éxito en el mundo online.
+  </p>
+
+  <h2 style="color:#0d1b3a; margin-top:30px;">Nuestra Misión y Visión</h2>
+  <p>
+    Nuestra misión es ofrecer soluciones digitales innovadoras, confiables y asequibles. Nuestra visión es poner nuestro grano de arena en un mundo donde todos puedan construir y expandir su presencia sin barreras.
+  </p>
+
+  <h2 style="color:#0d1b3a; margin-top:30px;">Por Qué Elegirnos</h2>
+  <ul>
+    <li>Servicios rápidos y seguros</li>
+    <li>Herramientas fáciles de usar</li>
+    <li>Soluciones asequibles</li>
+    <li>Soporte al cliente 24/7</li>
+  </ul>
+
+  <p style="margin-top:30px; text-align:center;">
+    <strong>Únete a NameGasm y construyamos juntos tu éxito en internet.</strong>
+  </p>
+</section>
+
+<div style="text-align: center;">
+  	<button class="btn-inicio" onclick="window.location.href='/es'">
+   	 Volver a Inicio
+  	</button>
+</div>
+<!-- Chatbot Universal -->
+		<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  		<button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   	 💬 Chat
+  		</button>
+  		<div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    		<div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    		<div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    		<div style="display:flex; border-top:1px solid #ccc;">
+     	 <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      	<button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    	</div>
+  	</div>
+	</div>
+
+	<script>
+  		const toggle = document.getElementById("chatbot-toggle");
+  		const box = document.getElementById("chatbot-box");
+  		const input = document.getElementById("chatbot-input");
+  		const send = document.getElementById("chatbot-send");
+  		const messages = document.getElementById("chatbot-messages");
+
+  	toggle.addEventListener("click", () => {
+    	box.style.display = box.style.display === "none" ? "block" : "none";
+  	});
+
+ 		 send.addEventListener("click", () => {
+   		 const text = input.value.trim();
+   		 if(text){
+     		 messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+    		  messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+    		  input.value = "";
+    		  messages.scrollTop = messages.scrollHeight;
+  	  }
+  	});
+	</script>
+	</body>
+</html>

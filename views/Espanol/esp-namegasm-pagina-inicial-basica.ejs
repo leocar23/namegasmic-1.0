@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>namegasmic - Página Inicial</title>
+  <style>
+  /* Botón reutilizable de Inicio */
+	.btn-inicio {
+	  	background-color: #ff9900;
+	  	border: none;
+ 	 	color: white;
+ 	 	padding: 0.75rem 1.5rem;
+ 	 	font-size: 1rem;
+  		cursor: pointer;
+  		border-radius: 8px;
+  		transition: background-color 0.3s ease;
+  		margin-top: 1rem;
+	}
+	.btn-inicio:hover { background-color: #e68a00; }
+
+    body { margin: 0; font-family: Arial, sans-serif; background-color: #0d1b3a; }
+    header { background-color: #0d1b3a; color: red; padding: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    header .logo { display: flex; align-items: center; gap: 0.5rem; }
+    header svg { width: 40px; height: 40px; }
+    nav { background-color: #142952; }
+    nav ul { list-style: none; margin: 0; padding: 5px; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    nav ul li { position: relative; }
+    nav ul li a { display: flex; padding: 35px; color: white; text-decoration: none; cursor: pointer; }
+    nav ul li:hover { background-color: #1f3e73; }
+    /* Submenús */
+    nav ul li ul { display: none; position: absolute; background-color: #1f3e73; min-width: 200px; list-style: none; padding: 0; margin: 0; z-index: 1000; }
+    nav ul li ul li a { padding: 0.5rem; color: white; }
+    nav ul li ul li a:hover { background-color: #284f91; }
+    nav ul li.show > ul { display: block; }
+    /* Footer */
+    footer { background-color: #0d1b3a; color: white; padding: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+    footer h4 { margin-top: 0; margin-bottom: 0.5rem; font-size: 1.1rem; }
+    footer ul { list-style: none; padding: 0; margin: 0; }
+    footer ul li { margin-bottom: 0.5rem; }
+    footer ul li a { color: #ccc; text-decoration: none; }
+    footer ul li a:hover { color: white; }
+    /* Responsive */
+    @media (max-width: 768px) { nav ul { flex-direction: column; } nav ul li ul { position: static; } }
+  </style>
+</head>
+<body>
+
+<!-- Selector de idiomas universal de espanol a ingles-->
+<div style="position:fixed; top:135px; right:35px; z-index:9999; display:flex; gap:10px;">
+  <a href="/en/namegasm-pagina-inicial-basica"><img src="/img/bandera-uk.png" alt="Inglés" style="width:60px; height:50px; cursor:pointer;"></a>
+</div>
+
+<header>
+  <button onclick="window.location.href='/es/esp-sign-in'"
+    style="background-color:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+    Entrar
+  </button>
+
+  <button onclick="window.location.href='/es/esp-sign-up'"
+    style="background-color:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+    Registrarse
+  </button>
+
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="30" fill="#ff9900"/>
+      <text x="32" y="38" font-size="20" text-anchor="middle" fill="white">N</text>
+    </svg>
+    <h1>namegasm</h1>
+  </div>
+
+  <div>
+    <button onclick="window.location.href='/es/esp-sign-out'"
+      style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Darse de Baja
+    </button>
+  </div>
+
+  <!-- Botón Salir -->
+  <div>
+    <button onclick="window.location.href='https://www.google.com'"
+      style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Salir
+    </button>
+  </div>
+</header>
+
+<nav>
+  <ul id="mainMenu">
+    <li>
+      <a>Dominios</a>
+      <ul>
+        <li><a href="/es/esp-search-domain">Buscar Dominios</a></li>
+        <li><a href="/es/esp-new-tlds">TLDs Nuevos</a></li>
+        <li><a href="/es/esp-personal-domains">Dominios Personales</a></li>
+        <li><a href="/es/esp-name-generator">Generador de Nombres</a></li>
+        <li><a href="/es/esp-premium-dns" class="button">DNS Premium</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Seguridad</a>
+      <ul>
+        <li><a href="/es/esp-ssl-certificates" class="button">Cerificados SSL</a></li>
+        <li><a href="/es/esp-domain-privacy" class="button">Privacidad de Dominio</a></li>
+        <li><a href="/es/esp-website-security" class="button">Seguridad de sitio Web</a></li>
+        <li><a href="/es/esp-cdn" class="button">CDN</a></li>
+        <li><a href="/es/esp-2fa" class="button">2FA</a></li>
+        <li><a href="/es/esp-anti-spam-protection" class="button">Protección Anti Spam</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Alojamiento</a>
+      <ul>
+        <li><a href="/es/esp-shared-hosting" class="button">Alojamiento Compartido</a></li>
+        <li><a href="/es/esp-wordpress-hosting" class="button">Alojamiento Wordpress</a></li>
+        <li><a href="/es/esp-reseller-hosting" class="button">Alojamiento para Revendedores</a></li>
+        <li><a href="/es/esp-dedicated-servers" class="button">Servidores Dedicados</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Transfiere a Nosotros</a>
+      <ul>
+        <li><a href="/es/esp-migrate-to-namegasm" class="button">Migrar a namegasm</a></li>
+        <!-- Dejamos este enlace tal cual; ya existe el alias en routes -->
+        <li><a href="/es/esp-domain-transfer">Migrar Dominio</a></li>
+        <li><a href="/es/esp-migrate-hosting">Migrar Alojamiento</a></li>
+        <li><a href="/es/esp-migrate-wordpress">Migrar Wordpress</a></li>
+        <li><a href="/es/esp-migrate-email">Migrar E-mail</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>WordPress</a>
+      <ul>
+        <li><a href="/es/esp-migrate-to-wordpress">Migrar a Wordpress</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Ayuda</a>
+      <ul>
+        <li><a href="/es/esp-how-to">Cómo se hace?</a></li>
+      </ul>
+    </li>
+    <li>
+      <a>Contáctenos</a>
+      <ul>
+        <li><a href="/es/esp-contact-us">E-mail</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<main style="padding: 2rem; text-align: center; color: white">
+  <h2>Bienvenido, Hagámos de tu Proyecto una Realidad!</h2>
+  <p>Explora el menú para ver las secciones disponibles.</p>
+</main>
+
+<div style="text-align: center;">
+  <button class="btn-inicio" onclick="window.location.href='/es/esp-namegasm-basica'">
+    Ir a Inicio
+  </button>
+</div>
+
+<footer>
+  <div></div>
+</footer>
+
+<script>
+  document.querySelectorAll('#mainMenu > li > a').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const parent = btn.parentElement;
+      parent.classList.toggle('show');
+      // Cerrar otros
+      document.querySelectorAll('#mainMenu > li').forEach(li => {
+        if(li !== parent) li.classList.remove('show');
+      });
+    });
+  });
+</script>
+
+<!-- Chatbot Universal -->
+<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+  <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+   💬 Chat
+  </button>
+  <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    <div style="display:flex; border-top:1px solid #ccc;">
+      <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById("chatbot-toggle");
+  const box = document.getElementById("chatbot-box");
+  const input = document.getElementById("chatbot-input");
+  const send = document.getElementById("chatbot-send");
+  const messages = document.getElementById("chatbot-messages");
+
+  toggle.addEventListener("click", () => {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+
+  send.addEventListener("click", () => {
+    const text = input.value.trim();
+    if(text){
+      messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+      messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+      input.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+  });
+</script>
+
+</body>
+</html>
+

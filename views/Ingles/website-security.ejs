@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Website Security</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding-top: 90px; background-color: #0d1b3a; }
+    h1 { color: white; margin: 0 16px 8px; }
+    p  { color: white; margin: 0 16px 16px; }
+
+    input { padding: 10px; width: 300px; margin-top: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 10px 20px; margin-top: 10px; background-color: #0073e6; color: white; border: none; cursor: pointer; border-radius: 8px; }
+    button:hover { background-color: #005bb5; }
+
+    #result { margin: 18px auto 0; font-size: 16px; color: #fff; max-width: 620px; }
+    .report { background:#ffffff; color:#0d1b3a; border-radius:12px; padding:16px; text-align:left; box-shadow:0 4px 10px rgba(0,0,0,0.25); }
+    .ok { color:#27ae60; } .warn { color:#e67e22; } .bad { color:#c0392b; }
+
+    .btn-inicio { background-color: #0073e6; border: none; color: white; padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer; border-radius: 8px; transition: background-color 0.3s ease; margin-top: 1rem; }
+    .btn-inicio:hover { background-color: #005bb5; }
+
+    .lang-switch { position: fixed; top: 15px; right: 50px; z-index: 9999; display: flex; gap: 10px; }
+    .lang-switch img { width: 60px; height: 50px; cursor: pointer; display: block; }
+
+    .pricing-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 26px 16px; }
+    .card { background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.3); padding: 12px; text-align: center; transition: transform 0.2s ease-in-out; max-width: 260px; margin: 0 auto; }
+    .card:hover { transform: translateY(-5px); }
+    .card h1 { margin: 0; font-size: 18px; color: #fff; }
+    .price { font-size: 14px; font-weight: bold; margin: 10px 0; color: #ffd700; }
+    .desc { font-size: 12px; margin-bottom: 15px; color: #f0f0f0; }
+    .btn { display: inline-block; padding: 10px 20px; background: #ffd700; color: #0d1b3a; font-weight: bold; border-radius: 8px; text-decoration: none; transition: background 0.3s; }
+    .btn:hover { background: #ffcc00; }
+
+    #chatbot-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+    #chatbot-toggle { background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2); }
+    #chatbot-box { display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden; }
+  </style>
+</head>
+<body>
+
+  <!-- Language: English -> Spanish -->
+  <div class="lang-switch">
+    <a href="/es/esp-seguridad-web">
+      <img src="/img/bandera-es.png" alt="Español">
+    </a>
+  </div>
+
+  <h1>Website Security</h1>
+  <p>Check your website’s current security posture.</p>
+
+  <input type="text" id="domainInput" placeholder="Enter your domain (e.g., example.com)">
+  <br>
+  <button onclick="checkSecurity()">Check Security</button>
+
+  <div id="result" aria-live="polite" aria-atomic="true"></div>
+
+  <div style="text-align:center;">
+    <button class="btn-inicio" onclick="window.location.href='namegasm-pagina-inicial-basica'">Go Back!</button>
+  </div>
+
+  <!-- Plans -->
+  <div class="pricing-container">
+    <div class="card">
+      <h1>Security Scan</h1>
+      <p class="price">€9 one-off</p>
+      <p class="desc">Malware/blacklist & headers review.</p>
+      <a href="#" class="btn" id="plan-scan">Buy</a>
+    </div>
+    <div class="card">
+      <h1>WAF + CDN</h1>
+      <p class="price">€4.99 / mo</p>
+      <p class="desc">DDoS mitigation, caching & rules.</p>
+      <a href="#" class="btn" id="plan-waf">Subscribe</a>
+    </div>
+    <div class="card">
+      <h1>Full Suite</h1>
+      <p class="price">€9.99 / mo</p>
+      <p class="desc">WAF + CDN + daily scans + alerts.</p>
+      <a href="#" class="btn" id="plan-full">Subscribe</a>
+    </div>
+  </div>
+
+  <script>
+    function isValidDomain(d) {
+      return /^(?!-)([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,}$/.test(d);
+    }
+
+    function checkSecurity() {
+      const d = document.getElementById('domainInput').value.trim();
+      const out = document.getElementById('result');
+      if (!d) { out.innerHTML = "⚠ Please enter a domain name."; return; }
+      if (!isValidDomain(d)) { out.innerHTML = "⚠ Please enter a valid domain (e.g., example.com)."; return; }
+
+      // Simulated checks
+      const https = Math.random() > 0.2;
+      const headers = Math.random() > 0.5;
+      const malware = Math.random() > 0.8; // true = infected
+      const blacklist = Math.random() > 0.9; // true = listed
+
+      const gradeScore = (https?30:0) + (headers?25:0) + (!malware?25:0) + (!blacklist?20:0);
+      const grade = gradeScore >= 80 ? 'A' : gradeScore >= 60 ? 'B' : gradeScore >= 40 ? 'C' : 'D';
+
+      out.innerHTML = `
+        <div class="report">
+          <div><b>🔐 Domain:</b> ${d}</div>
+          <ul style="margin:10px 0 0 18px; padding:0; list-style:disc;">
+            <li>HTTPS/TLS: <span class="${https?'ok':'bad'}">${https?'OK':'Missing/weak'}</span></li>
+            <li>Security headers (CSP/HSTS): <span class="${headers?'ok':'warn'}">${headers?'Present':'Partial/none'}</span></li>
+            <li>Malware scan: <span class="${!malware?'ok':'bad'}">${!malware?'Clean':'Suspicious'}</span></li>
+            <li>Blacklist (phishing/spam): <span class="${!blacklist?'ok':'bad'}">${!blacklist?'Not listed':'Listed'}</span></li>
+          </ul>
+          <div style="margin-top:10px;"><b>Score:</b> ${gradeScore}/100 — <b>Grade:</b> ${grade}</div>
+        </div>
+      `;
+    }
+
+    // Orders -> /cart
+    function order(name, price, period) {
+      fetch('/api/orders', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ items: [{ name, price, currency:'EUR', quantity:1, period: period || null }] })
+      })
+      .then(r=>r.json())
+      .then(()=>{ window.location.href='/cart'; })
+      .catch(err=>alert('Error creating order: '+err.message));
+    }
+    document.getElementById('plan-scan').addEventListener('click', e=>{ e.preventDefault(); order('Security Scan (one-off)', 9.00, 'once'); });
+    document.getElementById('plan-waf').addEventListener('click',  e=>{ e.preventDefault(); order('WAF + CDN (monthly)', 4.99, 'monthly'); });
+    document.getElementById('plan-full').addEventListener('click', e=>{ e.preventDefault(); order('Full Suite (monthly)', 9.99, 'monthly'); });
+  </script>
+
+  <!-- Chatbot -->
+  <div id="chatbot-container">
+    <button id="chatbot-toggle">💬 Chat</button>
+    <div id="chatbot-box">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px; color:#0d1b3a;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const toggle=document.getElementById("chatbot-toggle");
+    const box=document.getElementById("chatbot-box");
+    const input=document.getElementById("chatbot-input");
+    const send=document.getElementById("chatbot-send");
+    const messages=document.getElementById("chatbot-messages");
+    toggle.addEventListener("click",()=>{ box.style.display=(box.style.display==="none"||box.style.display==="")?"block":"none"; });
+    send.addEventListener("click",()=>{ const t=input.value.trim(); if(t){ messages.innerHTML+=`<div style="margin-bottom:10px;"><strong>You:</strong> ${t}</div>`; messages.innerHTML+=`<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thanks! I’ll get back to you shortly.</div>`; input.value=""; messages.scrollTop=messages.scrollHeight; } });
+    input.addEventListener("keydown",(e)=>{ if(e.key==="Enter") send.click(); });
+  </script>
+</body>
+</html>
