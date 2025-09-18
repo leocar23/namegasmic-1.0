@@ -1,5 +1,4 @@
 // index.js — Express + EJS + MongoDB + rutas robustas + RDAP + plan gratis 3/día
-
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -20,72 +19,47 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // ── Estáticos desde /public
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/bandera-es.png", express.static(path.join(__dirname, "public", "img", "bandera-es.png")));
-app.use("/bandera-uk.png", express.static(path.join(__dirname, "public", "img", "bandera-uk.png")));
+const PUBLIC_DIR = path.join(__dirname, "public");
+app.use(express.static(PUBLIC_DIR));
 
-// ── BANDERAS (alias comunes; si luego quieres lo vemos de nuevo)
-const flagsDir = path.join(__dirname, "public", "ing");
-[
-  "/img","/ing","/flags","/images",
-  "/es/img","/en/img","/es/ing","/en/ing","/es/flags","/en/flags","/es/images","/en/images"
-].forEach(p => app.use(p, express.static(flagsDir)));
-app.use((req, res, next) => {
-  const last = path.basename(req.path).toLowerCase();
-  if (last === "bandera-es.png" || last === "bandera-uk.png") {
-    const abs = path.join(flagsDir, last);
-    if (fs.existsSync(abs)) return res.sendFile(abs);
-  }
-  next();
-});
+// ── Banderas (alias sólidos; evitan tocar todas las páginas)
+["/bandera-es.png", "/en/bandera-es.png", "/es/bandera-es.png"].forEach(p =>
+  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-es.png")))
+);
+["/bandera-uk.png", "/en/bandera-uk.png", "/es/bandera-uk.png"].forEach(p =>
+  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-uk.png")))
+);
 
-// Helpers render
+// Helpers render / archivos
 function renderSafe(res, viewPath, data = {}) {
   res.render(viewPath, data, (err, html) => {
     if (err) return res.status(404).send(`No se encontró la vista: ${viewPath}`);
     res.send(html);
   });
 }
-function viewExists(viewPathNoExt) {
-  return fs.existsSync(path.join(__dirname, "views", `${viewPathNoExt}.ejs`));
-}
-function renderFirstExistingView(res, candidates = [], data = {}) {
-  for (const v of candidates) if (viewExists(v)) return renderSafe(res, v, data);
-  return res.status(404).send("No se encontró ninguna de: " + candidates.map(v => `${v}.ejs`).join(" | "));
-}
-function sendFirstExisting(res, relPaths = []) {
-  for (const rel of relPaths) {
-    const abs = path.join(__dirname, "public", rel);
-    if (fs.existsSync(abs)) return res.sendFile(abs);
-  }
-  return res.status(404).send(`No existe ninguno de: ${relPaths.join(" | ")}`);
+function sendIfExists(res, relPath) {
+  const abs = path.join(PUBLIC_DIR, relPath);
+  if (fs.existsSync(abs)) return res.sendFile(abs);
+  return false;
 }
 
-// Middleware de protección básica
+// ── Protección básica (staging)
 app.use((req, res, next) => {
-  const auth = { login: "admin", password: "clave123" }; // cámbialo a lo que quieras
-
-  // Pedir credenciales
+  const auth = { login: "admin", password: "clave123" };
   const b64auth = (req.headers.authorization || "").split(" ")[1] || "";
   const [login, password] = Buffer.from(b64auth, "base64").toString().split(":");
-
-  // Verificar credenciales
-  if (login && password && login === auth.login && password === auth.password) {
-    return next();
-  }
-
-  // Si no coincide, pedir login
+  if (login && password && login === auth.login && password === auth.password) return next();
   res.set("WWW-Authenticate", 'Basic realm="Staging Area"');
   res.status(401).send("Acceso restringido");
 });
-    
+
 // ── Redirecciones base
 app.get("/", (_req, res) => res.redirect("/es/esp-namegasm-basica"));
 app.get("/es", (_req, res) => res.redirect("/es/esp-namegasm-basica"));
 app.get("/en", (_req, res) => res.redirect("/en/namegasm-basica"));
 app.get("/en/", (_req, res) => res.redirect("/en/namegasm-basica"));
 
-// ── ES base
+// ── ES base (EJS existentes)
 app.get("/es/esp-namegasm-basica", (_req, res) =>
   renderSafe(res, "Espanol/esp-namegasm-basica", { title: "NameGasm — Portada (ES)" })
 );
@@ -112,13 +86,13 @@ app.get("/es/esp-2FA", (_req, res) => renderSafe(res, "Espanol/esp-2fa", { title
 
 // Migrar dominio (ES)
 app.get("/es/esp-migrate-domain", (_req, res) =>
-  renderFirstExistingView(res, ["Espanol/esp-migrate-domain", "Espanol/esp-domain-transfer"], { title: "Migrar Dominio" })
+  renderSafe(res, "Espanol/esp-migrate-domain", { title: "Migrar Dominio" })
 );
 app.get("/es/esp-domain-transfer", (_req, res) =>
-  renderFirstExistingView(res, ["Espanol/esp-domain-transfer", "Espanol/esp-migrate-domain"], { title: "Migrar Dominio" })
+  renderSafe(res, "Espanol/esp-domain-transfer", { title: "Migrar Dominio" })
 );
 
-// ── EN base
+// ── EN base (EJS existentes)
 app.get("/en/namegasm-basica", (_req, res) =>
   renderSafe(res, "Ingles/namegasm-basica", { title: "NameGasm — Home (EN)" })
 );
@@ -126,21 +100,35 @@ app.get("/en/namegasm-pagina-inicial-basica", (_req, res) =>
   renderSafe(res, "Ingles/namegasm-pagina-inicial-basica", { title: "NameGasm — Features (EN)" })
 );
 app.get("/en/migrate-domain", (_req, res) =>
-  renderFirstExistingView(res, ["Ingles/migrate-domain", "Ingles/domain-transfer"], { title: "Migrate Domain" })
+  renderSafe(res, "Ingles/migrate-domain", { title: "Migrate Domain" })
 );
 app.get("/en/domain-transfer", (_req, res) =>
-  renderFirstExistingView(res, ["Ingles/domain-transfer", "Ingles/migrate-domain"], { title: "Migrate Domain" })
+  renderSafe(res, "Ingles/domain-transfer", { title: "Migrate Domain" })
 );
 
-// ── Estáticos /public (ES/EN)
-app.get("/cart",    (_req, res) => sendFirstExisting(res, ["cart.html"]));
-app.get("/en/cart", (_req, res) => sendFirstExisting(res, ["en/cart.html"]));
-app.get("/checkout",           (_req, res) => sendFirstExisting(res, ["checkout.html", "chekcout.html"]));
-app.get("/payment",            (_req, res) => sendFirstExisting(res, ["payment.html"]));
-app.get("/order-confirmation", (_req, res) => sendFirstExisting(res, ["order-confirmation.html"]));
-app.get("/en/checkout",           (_req, res) => sendFirstExisting(res, ["en/checkout.html", "en/chekcout.html"]));
-app.get("/en/payment",            (_req, res) => sendFirstExisting(res, ["en/payment.html"]));
-app.get("/en/order-confirmation", (_req, res) => sendFirstExisting(res, ["en/order-confirmation.html"]));
+// ── Estáticos /public (atajos existentes)
+app.get("/cart",    (_req, res) => sendIfExists(res, "cart.html"));
+app.get("/en/cart", (_req, res) => sendIfExists(res, "en/cart.html"));
+app.get("/checkout",           (_req, res) => sendIfExists(res, "checkout.html"));
+app.get("/payment",            (_req, res) => sendIfExists(res, "payment.html"));
+app.get("/order-confirmation", (_req, res) => sendIfExists(res, "order-confirmation.html"));
+app.get("/en/checkout",           (_req, res) => sendIfExists(res, "en/checkout.html"));
+app.get("/en/payment",            (_req, res) => sendIfExists(res, "en/payment.html"));
+app.get("/en/order-confirmation", (_req, res) => sendIfExists(res, "en/order-confirmation.html"));
+
+// ── Genéricos: primero HTML en /public, luego EJS
+app.get("/es/:page", (req, res) => {
+  // ES: archivos sueltos en /public (ej: public/esp-2fa.html)
+  const file = `${req.params.page}.html`;
+  if (sendIfExists(res, file)) return;
+  renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
+});
+app.get("/en/:page", (req, res) => {
+  // EN: archivos en /public/en/
+  const file = path.join("en", `${req.params.page}.html`);
+  if (sendIfExists(res, file)) return;
+  renderSafe(res, `Ingles/${req.params.page}`, { title: `EN — ${req.params.page}` });
+});
 
 // ───────────────────────────────────────────────────────────
 // Routers backend existentes (si están)
@@ -229,8 +217,6 @@ app.post("/api/search-domain-free", async (req, res) => {
     const ip = (req.headers["x-forwarded-for"] || req.ip || "").toString().split(",")[0].trim();
     const today = todayStr();
     const rec = dayBucket.get(ip) || { day: today, count: 0 };
-
-    // reset diario
     if (rec.day !== today) { rec.day = today; rec.count = 0; }
 
     if (rec.count >= DAILY_LIMIT) {
@@ -239,11 +225,9 @@ app.post("/api/search-domain-free", async (req, res) => {
       return res.status(402).json({ error: "Has alcanzado el límite diario gratuito (3). Compra o vuelve mañana." });
     }
 
-    // consume intento
     rec.count += 1;
     dayBucket.set(ip, rec);
 
-    // proxy a la búsqueda normal (con cache)
     const cached = ng_getCache(domain);
     if (cached) {
       res.setHeader("X-Daily-Limit", DAILY_LIMIT);
@@ -268,24 +252,13 @@ app.post("/api/search-domain-free", async (req, res) => {
   }
 });
 
-// Montar router de páginas (rutas definidas en routes/index.js)
-const pageRouter = require("./routes/index");
-app.use("/", pageRouter);
-
-
-// ── Comodines de vistas
-app.get("/es/:vista", (req, res) =>
-  renderSafe(res, `Espanol/${req.params.vista}`, { title: `ES — ${req.params.vista}` })
-);
-app.get("/en/:view", (req, res) =>
-  renderSafe(res, `Ingles/${req.params.view}`, { title: `EN — ${req.params.view}` })
-);
-
 // 404
 app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+
 
 
