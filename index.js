@@ -59,6 +59,24 @@ function sendFirstExisting(res, relPaths = []) {
   return res.status(404).send(`No existe ninguno de: ${relPaths.join(" | ")}`);
 }
 
+// Middleware de protección básica
+app.use((req, res, next) => {
+  const auth = { login: "admin", password: "clave123" }; // cámbialo a lo que quieras
+
+  // Pedir credenciales
+  const b64auth = (req.headers.authorization || "").split(" ")[1] || "";
+  const [login, password] = Buffer.from(b64auth, "base64").toString().split(":");
+
+  // Verificar credenciales
+  if (login && password && login === auth.login && password === auth.password) {
+    return next();
+  }
+
+  // Si no coincide, pedir login
+  res.set("WWW-Authenticate", 'Basic realm="Staging Area"');
+  res.status(401).send("Acceso restringido");
+});
+    
 // ── Redirecciones base
 app.get("/", (_req, res) => res.redirect("/es/esp-namegasm-basica"));
 app.get("/es", (_req, res) => res.redirect("/es/esp-namegasm-basica"));
@@ -267,3 +285,4 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
