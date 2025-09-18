@@ -21,6 +21,8 @@ app.set("views", path.join(__dirname, "views"));
 
 // ── Estáticos desde /public
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/bandera-es.png", express.static(path.join(__dirname, "public", "img", "bandera-es.png")));
+app.use("/bandera-uk.png", express.static(path.join(__dirname, "public", "img", "bandera-uk.png")));
 
 // ── BANDERAS (alias comunes; si luego quieres lo vemos de nuevo)
 const flagsDir = path.join(__dirname, "public", "ing");
@@ -285,4 +287,5 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
