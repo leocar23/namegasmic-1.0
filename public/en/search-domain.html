@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Domain - namegasm</title>
+  <style>
+  .pricing-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .card {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card h2 {
+    margin: 0;
+    font-size: 10px;
+    color: #fff;
+  }
+
+  .price {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 15px 0;
+    color: #ffd700;
+  }
+
+  .desc {
+    font-size: 10px;
+    margin-bottom: 20px;
+    color: #f0f0f0;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #ffd700;
+    color: #0d1b3a;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+
+  .btn:hover {
+    background: #ffcc00;
+  }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d1b3a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #0d1b3a;
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 2px solid #142952;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    h2 { margin-bottom: 1rem; }
+
+    .search-box {
+      display: flex;
+      max-width: 500px;
+      width: 100%;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+    }
+
+    /* Estilo común para ambos botones */
+    .btn {
+      background-color: #ff9900;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover { background-color: #e68a00; }
+
+    /* Ajuste de forma para el botón Buscar pegado al input */
+    .search-box button {
+      border-radius: 0 8px 8px 0;
+      padding: 0 1.5rem; /* mismo alto por estiramiento del flex */
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+    }
+    footer {
+      background-color: #0d1b3a;
+      text-align: center;
+      padding: 1rem;
+      border-top: 2px solid #142952;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<!-- Selector de idiomas universal de ingles a espanol-->
+		<div style="position:fixed; top:15px; right:50px; z-index:9999; display:flex; gap:10px;">
+  			<a href="file:///C:/Users/Cris/Desktop/Proyecto/namegasm/Inicio/Para%20subir%20a%20servidor/Español/esp-search-domain.html"><img src="bandera-es.png" alt="Español" style="width:60px; height:50px; cursor:pointer;" onclick="setLanguage('es')"></a>
+ 		</div>
+<header>
+  <h1>namegasm - Search Domain</h1>
+</header>
+
+<main>
+  <h2>Enter your Domain</h2>
+
+  <div class="search-box">
+    <input type="text" id="domainInput" placeholder="Enter your Domain (e.g. example.com)" />
+    <button class="btn" onclick="searchDomain()">Search</button>
+  </div>
+
+  <!-- Botón Inicio con el mismo estilo -->
+  <div style="margin-top: 1rem;">
+    <button class="btn" onclick="window.location.href='namegasm-pagina-inicial-basica.html'">Go Back</button>
+  </div>
+
+  <div id="result" class="result"></div>
+</main> 
+ 
+  
+
+<script>
+  async function searchDomain() {
+    const domain = document.getElementById('domainInput').value.trim();
+    const resultDiv = document.getElementById('result');
+
+    if (!domain) {
+      resultDiv.textContent = "Please write a domain name to search.";
+      resultDiv.style.color = "white";
+      return;
+    }
+
+    try {
+      // ⚡ Hacemos la petición POST a tu backend
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ domain })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        resultDiv.textContent = `Domain: ${data.domain} → Available: ${data.available}`;
+        resultDiv.style.color = data.available ? "lightgreen" : "red";
+      } else {
+        resultDiv.textContent = data.error || "Error in search.";
+        resultDiv.style.color = "red";
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      resultDiv.textContent = "Server not available.";
+      resultDiv.style.color = "red";
+    }
+  }
+</script>
+
+
+
+
+<!-- Chatbot Universal -->
+<div id="chatbot-container" style="position:fixed; bottom:3px; right:20px; z-index:9999;">
+  <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+    💬 Chat
+  </button>
+  <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+    <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+    <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+    <div style="display:flex; border-top:1px solid #ccc;">
+      <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+      <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById("chatbot-toggle");
+  const box = document.getElementById("chatbot-box");
+  const input = document.getElementById("chatbot-input");
+  const send = document.getElementById("chatbot-send");
+  const messages = document.getElementById("chatbot-messages");
+
+  toggle.addEventListener("click", () => {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+
+  send.addEventListener("click", () => {
+    const text = input.value.trim();
+    if(text){
+      messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
+      messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Gracias por tu mensaje, pronto tendrás respuesta.</div>`;
+      input.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+  });
+</script>
+
+<div class="pricing-container">
+  <div class="card">
+    <h2>Basic</h2>
+    <p class="price">Free</p>
+    <p class="desc">Limited domain name search per day (3 daily).</p>
+    <a href="#" class="btn">Start</a>
+  </div>
+
+  <div class="card">
+    <h2>Premium</h2>
+    <p class="price">6 €/month</p>
+    <p class="desc">Ilimited search, Browsing history record and personalized suggestions.</p>
+    <a href="#" class="btn">Subscribe</a>
+  </div>
+
+  <div class="card">
+    <h2>Domains</h2>
+    <p class="price">Desde 66 €/year</p>
+    <p class="desc">Register your domain in multiple new and classic extensions.</p>
+    <a href="#" class="btn">Register</a>
+  </div>
+</div>
+
+</body>
+<footer>
+  &copy; 2025 namegasm. All rights reserved.
+</footer>
+</html>
+
