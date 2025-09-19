@@ -91,6 +91,10 @@ app.get("/es/esp-migrate-domain", (_req, res) =>
 app.get("/es/esp-domain-transfer", (_req, res) =>
   renderSafe(res, "Espanol/esp-domain-transfer", { title: "Migrar Dominio" })
 );
+// ✅ NUEVA RUTA LITERAL → renderiza la vista EJS
+ app.get("/es/new-tlds", (_req, res) =>
+  renderSafe(res, "Espanol/new-tlds", { title: "Nuevas TLDs" })
+);                                          
 
 // ── EN base (EJS existentes)
 app.get("/en/namegasm-basica", (_req, res) =>
@@ -263,4 +267,5 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
