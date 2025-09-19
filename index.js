@@ -92,8 +92,8 @@ app.get("/es/esp-domain-transfer", (_req, res) =>
   renderSafe(res, "Espanol/esp-domain-transfer", { title: "Migrar Dominio" })
 );
 // ✅ NUEVA RUTA LITERAL → renderiza la vista EJS
- app.get("/es/new-TLDs", (_req, res) =>
-  renderSafe(res, "Espanol/new-TLDs", { title: "TLDs Nuevos" })
+ app.get("/es/esp-new-TLDs", (_req, res) =>
+  renderSafe(res, "Espanol/esp-new-TLDs", { title: "TLDs Nuevos" })
 );                                          
 
 // ── EN base (EJS existentes)
@@ -267,6 +267,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
