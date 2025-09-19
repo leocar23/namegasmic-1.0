@@ -94,7 +94,13 @@ app.get("/es/esp-domain-transfer", (_req, res) =>
 // ✅ NUEVA RUTA LITERAL → renderiza la vista EJS
  app.get("/es/esp-new-TLDs", (_req, res) =>
   renderSafe(res, "Espanol/esp-new-TLDs", { title: "TLDs Nuevos" })
-);                                          
+);
+ app.get("/es/esp-2FA", (_req, res) =>
+  renderSafe(res, "Espanol/esp-2FA", { title: "2FA" })
+);
+ app.get("/es/esp-domain-privacy", (_req, res) =>
+  renderSafe(res, "Espanol/esp-domain-privacy", { title: "2FA" })
+);
 
 // ── EN base (EJS existentes)
 app.get("/en/namegasm-basica", (_req, res) =>
@@ -117,6 +123,10 @@ app.get("/en/search-domain", (_req, res) =>
 app.get("/en/new-TLDs", (_req, res) =>
   renderSafe(res, "Ingles/new-TLDs", { title: "New TLDs" })
 );
+app.get("/en/migrate-domain", (_req, res) =>
+  renderSafe(res, "Ingles/migrate-domain", { title: "New TLDs" })
+);
+
 // ── Estáticos /public (atajos existentes)
 app.get("/cart",    (_req, res) => sendIfExists(res, "cart.html"));
 app.get("/en/cart", (_req, res) => sendIfExists(res, "en/cart.html"));
@@ -267,6 +277,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
