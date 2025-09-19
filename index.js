@@ -1,10 +1,10 @@
-// index.js — Express + EJS + MongoDB + rutas limpias (sin comodines) + RDAP + plan gratis 3/día
+// index.js — Express + EJS + MongoDB + rutas robustas + RDAP + plan gratis 3/día
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const fetch = require("node-fetch");
 
-// ── MongoDB (si aplica)
+// ── MongoDB
 const connectDB = require("./db");
 connectDB();
 
@@ -18,11 +18,11 @@ app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ── Estáticos /public
+// ── Estáticos desde /public
 const PUBLIC_DIR = path.join(__dirname, "public");
 app.use(express.static(PUBLIC_DIR));
 
-// ── Banderas (alias sólidos)
+// ── Banderas (alias sólidos; evitan tocar todas las páginas)
 ["/bandera-es.png", "/en/bandera-es.png", "/es/bandera-es.png"].forEach(p =>
   app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-es.png")))
 );
@@ -30,7 +30,7 @@ app.use(express.static(PUBLIC_DIR));
   app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-uk.png")))
 );
 
-// ── Helpers
+// Helpers render / archivos
 function renderSafe(res, viewPath, data = {}) {
   res.render(viewPath, data, (err, html) => {
     if (err) return res.status(404).send(`No se encontró la vista: ${viewPath}`);
@@ -59,94 +59,59 @@ app.get("/es", (_req, res) => res.redirect("/es/esp-namegasm-basica"));
 app.get("/en", (_req, res) => res.redirect("/en/namegasm-basica"));
 app.get("/en/", (_req, res) => res.redirect("/en/namegasm-basica"));
 
-// ======================================================================
-// RUTAS LIMPIAS — ESPAÑOL (sin comodines)
-// ======================================================================
-const ES = (view, title) => (_req, res) => renderSafe(res, `Espanol/${view}`, { title });
-
-app.get("/es/esp-namegasm-basica",
-  ES("esp-namegasm-basica", "NameGasm — Portada (ES)")
+// ── ES base (EJS existentes)
+app.get("/es/esp-namegasm-basica", (_req, res) =>
+  renderSafe(res, "Espanol/esp-namegasm-basica", { title: "NameGasm — Portada (ES)" })
 );
-app.get("/es/esp-namegasm-pagina-inicial-basica",
-  ES("esp-namegasm-pagina-inicial-basica", "NameGasm — Funcionalidades (ES)")
+app.get("/es/esp-namegasm-pagina-inicial-basica", (_req, res) =>
+  renderSafe(res, "Espanol/esp-namegasm-pagina-inicial-basica", { title: "NameGasm — Funcionalidades (ES)" })
 );
 
-// Header
-app.get("/es/esp-sign-in",  ES("esp-sign-in",  "Entrar"));
-app.get("/es/esp-sign-up",  ES("esp-sign-up",  "Registrarse"));
-app.get("/es/esp-sign-out", ES("esp-sign-out", "Darse de baja"));
-
-// Seguridad
-app.get("/es/esp-2fa", ES("esp-2fa", "2FA"));
-app.get("/es/esp-2FA", ES("esp-2fa", "2FA")); // alias mayúscula
-
-// Migraciones
-app.get("/es/esp-migrate-domain",   ES("esp-migrate-domain",   "Migrar Dominio"));
-app.get("/es/esp-domain-transfer",  ES("esp-domain-transfer",  "Migrar Dominio"));
-app.get("/es/esp-migrate-hosting",  ES("esp-migrate-hosting",  "Migrar Alojamiento"));
-app.get("/es/esp-migrate-wordpress",ES("esp-migrate-wordpress","Migrar Wordpress"));
-app.get("/es/esp-migrate-email",    ES("esp-migrate-email",    "Migrar E-mail"));
-
-// Otras (agrega aquí más vistas ES cuando las tengas)
-app.get("/es/esp-how-to",       ES("esp-how-to",       "Cómo se hace?"));
-app.get("/es/esp-contact-us",   ES("esp-contact-us",   "Contáctenos"));
-app.get("/es/esp-search-domain",ES("esp-search-domain","Búsqueda de dominio")); // si existiera versión ES
-
-// Aliases sin /es (si los usas)
-app.get("/namegasm-pagina-inicial-basica",
-  ES("esp-namegasm-pagina-inicial-basica", "NameGasm — Funcionalidades (ES)")
+// Aliases sin /es
+app.get("/namegasm-pagina-inicial-basica", (_req, res) =>
+  renderSafe(res, "Espanol/esp-namegasm-pagina-inicial-basica", { title: "NameGasm — Funcionalidades (ES)" })
 );
-app.get("/esp-about-us", ES("esp-about-us", "Acerca de nosotros"));
-
-// ======================================================================
-// RUTAS LIMPIAS — ENGLISH (sin comodines)
-// ======================================================================
-const EN = (view, title) => (_req, res) => renderSafe(res, `Ingles/${view}`, { title });
-
-app.get("/en/namegasm-basica",
-  EN("namegasm-basica", "NameGasm — Home (EN)")
-);
-app.get("/en/namegasm-pagina-inicial-basica",
-  EN("namegasm-pagina-inicial-basica", "NameGasm — Features (EN)")
+app.get("/esp-about-us", (_req, res) =>
+  renderSafe(res, "Espanol/esp-about-us", { title: "Acerca de nosotros" })
 );
 
-// Domains
-app.get("/en/search-domain", EN("search-domain", "Search Domain"));
-app.get("/en/new-tlds",      EN("new-tlds",      "New TLDs"));
-app.get("/en/personal-domains", EN("personal-domains", "Personal Domains"));
-app.get("/en/name-generator",   EN("name-generator",   "Name Generator"));
-app.get("/en/premium-dns",      EN("premium-dns",      "Premium DNS"));
+// Header (según tus vistas)
+app.get("/es/esp-sign-in",  (_req, res) => renderSafe(res, "Espanol/esp-sign-in",  { title: "Entrar" }));
+app.get("/es/esp-sign-up",  (_req, res) => renderSafe(res, "Espanol/esp-sign-up",  { title: "Registrarse" }));
+app.get("/es/esp-sign-out", (_req, res) => renderSafe(res, "Espanol/esp-sign-out", { title: "Darse de baja" }));
 
-// Security
-app.get("/en/ssl-certificates",    EN("ssl-certificates",    "SSL Certificates"));
-app.get("/en/domain-privacy",      EN("domain-privacy",      "Domain Privacy"));
-app.get("/en/website-security",    EN("website-security",    "Website Security"));
-app.get("/en/cdn",                 EN("cdn",                 "CDN"));
-app.get("/en/2FA",                 EN("2FA",                 "2FA"));
-app.get("/en/anti-spam-protection",EN("anti-spam-protection","Anti-Spam Protection"));
+// 2FA variantes
+app.get("/es/esp-2fa", (_req, res) => renderSafe(res, "Espanol/esp-2fa", { title: "2FA" }));
+app.get("/es/esp-2FA", (_req, res) => renderSafe(res, "Espanol/esp-2fa", { title: "2FA" }));
 
-// Hosting
-app.get("/en/shared-hosting",    EN("shared-hosting",    "Shared Hosting"));
-app.get("/en/wordpress-hosting", EN("wordpress-hosting", "WordPress Hosting"));
-app.get("/en/reseller-hosting",  EN("reseller-hosting",  "Reseller Hosting"));
-app.get("/en/dedicated-servers", EN("dedicated-servers", "Dedicated Servers"));
+// Migrar dominio (ES)
+app.get("/es/esp-migrate-domain", (_req, res) =>
+  renderSafe(res, "Espanol/esp-migrate-domain", { title: "Migrar Dominio" })
+);
+app.get("/es/esp-domain-transfer", (_req, res) =>
+  renderSafe(res, "Espanol/esp-domain-transfer", { title: "Migrar Dominio" })
+);
 
-// Transfers
-app.get("/en/migrate-to-namegasm", EN("migrate-to-namegasm", "Migrate to namegasm"));
-app.get("/en/migrate-domain",      EN("migrate-domain",      "Migrate Domain"));
-app.get("/en/domain-transfer",     EN("domain-transfer",     "Migrate Domain"));
-app.get("/en/migrate-hosting",     EN("migrate-hosting",     "Migrate Hosting"));
-app.get("/en/migrate-wordpress",   EN("migrate-wordpress",   "Migrate WordPress"));
-app.get("/en/migrate-email",       EN("migrate-email",       "Migrate E-mail"));
+// ── EN base (EJS existentes)
+app.get("/en/namegasm-basica", (_req, res) =>
+  renderSafe(res, "Ingles/namegasm-basica", { title: "NameGasm — Home (EN)" })
+);
+app.get("/en/namegasm-pagina-inicial-basica", (_req, res) =>
+  renderSafe(res, "Ingles/namegasm-pagina-inicial-basica", { title: "NameGasm — Features (EN)" })
+);
+app.get("/en/migrate-domain", (_req, res) =>
+  renderSafe(res, "Ingles/migrate-domain", { title: "Migrate Domain" })
+);
+app.get("/en/domain-transfer", (_req, res) =>
+  renderSafe(res, "Ingles/domain-transfer", { title: "Migrate Domain" })
+);
 
-// WordPress / Help / Contact
-app.get("/en/migrate-to-wordpress", EN("migrate-to-wordpress", "Migrate to WordPress"));
-app.get("/en/how-to",               EN("how-to",               "How To"));
-app.get("/en/contact-us",           EN("contact-us",           "Contact Us"));
+// ✅ NUEVA RUTA LITERAL → renderiza la vista EJS
+app.get("/en/search-domain", (_req, res) =>
+  renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
+);
 
-// ======================================================================
-// Estáticos /public (atajos comunes)
-// ======================================================================
+// ── Estáticos /public (atajos existentes)
 app.get("/cart",    (_req, res) => sendIfExists(res, "cart.html"));
 app.get("/en/cart", (_req, res) => sendIfExists(res, "en/cart.html"));
 app.get("/checkout",           (_req, res) => sendIfExists(res, "checkout.html"));
@@ -156,9 +121,21 @@ app.get("/en/checkout",           (_req, res) => sendIfExists(res, "en/checkout.
 app.get("/en/payment",            (_req, res) => sendIfExists(res, "en/payment.html"));
 app.get("/en/order-confirmation", (_req, res) => sendIfExists(res, "en/order-confirmation.html"));
 
-// ======================================================================
-// API / Backoffice routers (si existen)
-// ======================================================================
+// ── Genéricos: primero HTML en /public, luego EJS
+app.get("/es/:page", (req, res) => {
+  const file = `${req.params.page}.html`;
+  if (sendIfExists(res, file)) return;
+  renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
+});
+app.get("/en/:page", (req, res) => {
+  const file = path.join("en", `${req.params.page}.html`);
+  if (sendIfExists(res, file)) return;
+  renderSafe(res, `Ingles/${req.params.page}`, { title: `EN — ${req.params.page}` });
+});
+
+// ───────────────────────────────────────────────────────────
+// Routers backend existentes (si están)
+// ───────────────────────────────────────────────────────────
 try {
   app.use("/api/search", require("./routes/search"));
   app.use("/api/users",  require("./routes/users"));
@@ -168,10 +145,10 @@ try {
   console.warn("Aviso routers /routes: ", e.message);
 }
 
-// ======================================================================
-// RDAP endpoints
-// ======================================================================
-const ng_rateBucket = new Map();
+// ───────────────────────────────────────────────────────────
+// RDAP: endpoint general (ilimitado, con rate/minuto)
+// ───────────────────────────────────────────────────────────
+const ng_rateBucket = new Map(); // ip -> { count, ts }
 const NG_WINDOW_MS = 60 * 1000;
 const NG_MAX_REQ   = 60;
 
@@ -192,7 +169,7 @@ function ng_isValidDomain(domain) {
   const re = /^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
   return re.test(d);
 }
-const ng_cache = new Map();
+const ng_cache = new Map(); // key -> { value, exp }
 const NG_TTL_MS = 5 * 60 * 1000;
 function ng_getCache(key) {
   const it = ng_cache.get(key);
@@ -224,13 +201,17 @@ app.post("/api/search-domain", ng_rateLimit, async (req, res) => {
   }
 });
 
-// Plan GRATIS (3 intentos/día/IP)
+// ───────────────────────────────────────────────────────────
+// RDAP: endpoint del plan GRATIS (3 intentos/día/IP)
+// ───────────────────────────────────────────────────────────
 const DAILY_LIMIT = 3;
-const dayBucket = new Map();
+const dayBucket = new Map(); // ip -> { day: 'YYYY-MM-DD', count: n }
+
 function todayStr() {
   const d = new Date();
   return d.getUTCFullYear() + "-" + String(d.getUTCMonth()+1).padStart(2,"0") + "-" + String(d.getUTCDate()).padStart(2,"0");
 }
+
 app.post("/api/search-domain-free", async (req, res) => {
   try {
     const domain = String((req.body || {}).domain || "").trim();
@@ -274,10 +255,9 @@ app.post("/api/search-domain-free", async (req, res) => {
   }
 });
 
-// ── 404
+// 404
 app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 
-// ── Start
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
