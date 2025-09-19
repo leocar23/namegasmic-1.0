@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const fetch = require("node-fetch");
+const nodemailer = require("nodemailer");
 
 // ── MongoDB
 const connectDB = require("./db");
@@ -228,7 +229,38 @@ function todayStr() {
   const d = new Date();
   return d.getUTCFullYear() + "-" + String(d.getUTCMonth()+1).padStart(2,"0") + "-" + String(d.getUTCDate()).padStart(2,"0");
 }
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ ok: false, error: "Missing fields" });
+    }
 
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: String(process.env.SMTP_SECURE).toLowerCase() === "true", // true si 465
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: process.env.CONTACT_TO || process.env.SMTP_USER,
+      replyTo: `${name} <${email}>`,
+      subject: `Contact form: ${name}`,
+      text: message,
+      html: `<p>${message}</p><p>From: <strong>${name}</strong> &lt;${email}&gt;</p>`,
+    });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Error /api/contact:", err?.message || err);
+    res.status(500).json({ ok: false, error: "Mailer fail" });
+  }
+});
 app.post("/api/search-domain-free", async (req, res) => {
   try {
     const domain = String((req.body || {}).domain || "").trim();
@@ -301,6 +333,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
