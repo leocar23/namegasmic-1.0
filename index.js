@@ -1,3 +1,4 @@
+require('dotenv').config();
 // index.js — Express + EJS + MongoDB + rutas robustas + RDAP + plan gratis 3/día
 const express = require("express");
 const path = require("path");
@@ -277,6 +278,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
