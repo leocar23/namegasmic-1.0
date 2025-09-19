@@ -105,7 +105,9 @@ app.get("/en/migrate-domain", (_req, res) =>
 app.get("/en/domain-transfer", (_req, res) =>
   renderSafe(res, "Ingles/domain-transfer", { title: "Migrate Domain" })
 );
-app.get("/en/:search-domain", (req, res) =>
+
+// 🔧 CORRECCIÓN: ruta LITERAL para search-domain (EJS)
+app.get("/en/search-domain", (_req, res) =>
   renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
 );
 
@@ -119,9 +121,8 @@ app.get("/en/checkout",           (_req, res) => sendIfExists(res, "en/checkout.
 app.get("/en/payment",            (_req, res) => sendIfExists(res, "en/payment.html"));
 app.get("/en/order-confirmation", (_req, res) => sendIfExists(res, "en/order-confirmation.html"));
 
-// ── Genéricos: primero HTML en /public, luego EJS
+// ── Genéricos: primero HTML en /public, luego EJS (solo ES)
 app.get("/es/:page", (req, res) => {
-  // ES: archivos sueltos en /public (ej: public/esp-2fa.html)
   const file = `${req.params.page}.html`;
   if (sendIfExists(res, file)) return;
   renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
@@ -255,6 +256,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
