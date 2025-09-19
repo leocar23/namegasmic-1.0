@@ -110,7 +110,9 @@ app.get("/en/domain-transfer", (_req, res) =>
 app.get("/en/search-domain", (_req, res) =>
   renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
 );
-
+app.get("/en/new-tlds", (_req, res) =>
+  renderSafe(res, "Ingles/new-tlds", { title: "New TLDs" })
+);
 // ── Estáticos /public (atajos existentes)
 app.get("/cart",    (_req, res) => sendIfExists(res, "cart.html"));
 app.get("/en/cart", (_req, res) => sendIfExists(res, "en/cart.html"));
@@ -261,3 +263,4 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
