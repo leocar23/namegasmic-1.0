@@ -105,6 +105,9 @@ app.get("/en/migrate-domain", (_req, res) =>
 app.get("/en/domain-transfer", (_req, res) =>
   renderSafe(res, "Ingles/domain-transfer", { title: "Migrate Domain" })
 );
+app.get("/en/:search-domain", (req, res) =>
+  renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
+);
 
 // ── Estáticos /public (atajos existentes)
 app.get("/cart",    (_req, res) => sendIfExists(res, "cart.html"));
@@ -123,9 +126,6 @@ app.get("/es/:page", (req, res) => {
   if (sendIfExists(res, file)) return;
   renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
 });
-app.get("/en/:search-domain", (req, res) =>
-  renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
-);
 
 // ───────────────────────────────────────────────────────────
 // Routers backend existentes (si están)
@@ -255,6 +255,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
