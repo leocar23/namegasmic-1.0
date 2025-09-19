@@ -272,12 +272,36 @@ app.post("/api/search-domain-free", async (req, res) => {
   }
 });
 
+// ── Contact form (simple logger; listo para sustituir por Nodemailer después)
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ ok: false, error: "Missing fields" });
+    }
+
+    // Por ahora: registrar en servidor (staging)
+    console.log("📬 CONTACT FORM:", {
+      at: new Date().toISOString(),
+      name, email, message
+    });
+
+    // TODO: aquí luego integramos Nodemailer/SMTP
+    return res.json({ ok: true, msg: "Message received" });
+  } catch (err) {
+    console.error("Error /api/contact:", err?.message || err);
+    return res.status(500).json({ ok: false, error: "Internal error" });
+  }
+});
+
+
 // 404
 app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
