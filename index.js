@@ -123,8 +123,8 @@ app.get("/es/:page", (req, res) => {
   if (sendIfExists(res, file)) return;
   renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
 });
-app.get("/en/:page", (req, res) =>
-  renderSafe(res, `Ingles/${req.params.page}`, { title: `EN — ${req.params.page}` })
+app.get("/en/:search-domain", (req, res) =>
+  renderSafe(res, "Ingles/search-domain", { title: "Search Domain" })
 );
 
 // ───────────────────────────────────────────────────────────
@@ -255,6 +255,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
