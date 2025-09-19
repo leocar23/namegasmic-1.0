@@ -124,7 +124,7 @@ app.get("/en/new-TLDs", (_req, res) =>
   renderSafe(res, "Ingles/new-TLDs", { title: "New TLDs" })
 );
 app.get("/en/domain-transfer", (_req, res) =>
-  renderSafe(res, "Ingles/domain-transfer", { title: "New TLDs" })
+  renderSafe(res, "Ingles/domain-transfer", { title: "Migrate Domain" })
 );
 
 // ── Estáticos /public (atajos existentes)
@@ -277,6 +277,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
