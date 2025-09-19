@@ -23,11 +23,11 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 app.use(express.static(PUBLIC_DIR));
 
 // ── Banderas (alias sólidos; evitan tocar todas las páginas)
-["/bandera-es.png", "/en/bandera-es.png", "/es/bandera-es.png"].forEach(p =>
-  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-es.png")))
+["/bandera-es.PNG", "/en/bandera-es.PNG", "/es/bandera-es.PNG"].forEach(p =>
+  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-es.PNG")))
 );
-["/bandera-uk.png", "/en/bandera-uk.png", "/es/bandera-uk.png"].forEach(p =>
-  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-uk.png")))
+["/bandera-uk.PNG", "/en/bandera-uk.PNG", "/es/bandera-uk.PNG"].forEach(p =>
+  app.use(p, express.static(path.join(PUBLIC_DIR, "img", "bandera-uk.PNG")))
 );
 
 // Helpers render / archivos
@@ -277,6 +277,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
