@@ -123,12 +123,9 @@ app.get("/es/:page", (req, res) => {
   if (sendIfExists(res, file)) return;
   renderSafe(res, `Espanol/${req.params.page}`, { title: `ES — ${req.params.page}` });
 });
-app.get("/en/:page", (req, res) => {
-  // EN: archivos en /public/en/
-  const file = path.join("en", `${req.params.page}.html`);
-  if (sendIfExists(res, file)) return;
-  renderSafe(res, `Ingles/${req.params.page}`, { title: `EN — ${req.params.page}` });
-});
+app.get("/en/:page", (req, res) =>
+  renderSafe(res, `Ingles/${req.params.page}`, { title: `EN — ${req.params.page}` })
+);
 
 // ───────────────────────────────────────────────────────────
 // Routers backend existentes (si están)
@@ -258,6 +255,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
