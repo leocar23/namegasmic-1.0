@@ -96,7 +96,7 @@ app.get("/es/esp-domain-transfer", (_req, res) =>
   renderSafe(res, "Espanol/esp-new-TLDs", { title: "TLDs Nuevos" })
 );
  app.get("/es/esp-2FA", (_req, res) =>
-  renderSafe(res, "Espanol/esp-2FA", { title: "2FA" })
+  renderSafe(res, "Espanol/esp-2fa", { title: "2FA" })
 );
  app.get("/es/esp-domain-privacy", (_req, res) =>
   renderSafe(res, "Espanol/esp-domain-privacy", { title: "2FA" })
@@ -277,6 +277,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
