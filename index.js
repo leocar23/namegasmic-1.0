@@ -123,8 +123,8 @@ app.get("/en/search-domain", (_req, res) =>
 app.get("/en/new-TLDs", (_req, res) =>
   renderSafe(res, "Ingles/new-TLDs", { title: "New TLDs" })
 );
-app.get("/en/migrate-domain", (_req, res) =>
-  renderSafe(res, "Ingles/migrate-domain", { title: "New TLDs" })
+app.get("/en/domain-transfer", (_req, res) =>
+  renderSafe(res, "Ingles/domain-transfer", { title: "New TLDs" })
 );
 
 // ── Estáticos /public (atajos existentes)
@@ -277,6 +277,7 @@ app.use((_req, res) => res.status(404).send("404 - Página no encontrada"));
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
 
 
 
