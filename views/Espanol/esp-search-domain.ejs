@@ -107,7 +107,7 @@
   </footer>
 
   <script>
-    // --- Validación de dominio + endpoint gratuito con cuota ---
+    // --- Validación + endpoint gratuito / cuota ---
     function esDominioValido(d) {
       const s = (d || "").trim().toLowerCase();
       if (!s || s.length > 253 || s.includes("..")) return false;
@@ -137,17 +137,14 @@
         });
 
         const data = await response.json().catch(()=>({}));
-
         const remain = response.headers.get("X-Remaining");
         const limit  = response.headers.get("X-Daily-Limit");
 
         if (response.ok) {
-          const disponible = !!data.available;
+          const disponibilidad = data.available ? "Disponible" : "No disponible";
           resultDiv.innerHTML = `
             <div>Dominio: <strong>${data.domain}</strong></div>
-            <div>Estado: <strong style="color:${disponible ? 'lightgreen' : 'red'}">
-              ${disponible ? 'Disponible' : 'No disponible'}
-            </strong></div>
+            <div>Estado: <strong style="color:${data.available ? 'lightgreen' : 'red'}">${disponibilidad}</strong></div>
             ${remain !== null && limit !== null ? `<div class="muted">Cupo diario: ${remain}/${limit} restantes</div>` : ''}
           `;
         } else {
@@ -199,3 +196,4 @@
   </script>
 </body>
 </html>
+
