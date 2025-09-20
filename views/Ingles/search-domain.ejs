@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Search Domain - NameGasmic</title>
   <style>
-    .pricing-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin: 20px 0; }
+    /* Cards / Pricing */
+    .pricing-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+      margin: 20px auto;   /* centered */
+      width: 100%;
+      max-width: 900px;    /* same as ES */
+    }
     .card { background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); padding: 20px; text-align: center; transition: transform .2s; }
     .card:hover { transform: translateY(-5px); }
     .card h2 { margin: 0; font-size: 16px; color: #fff; }
@@ -14,18 +22,19 @@
     .btn, .btn a { display:inline-block; padding:10px 20px; background:#ffd700; color:#0d1b3a; font-weight:bold; border-radius:8px; text-decoration:none; transition:background .3s; border:none; cursor:pointer; }
     .btn:hover { background:#ffcc00; }
 
+    /* Page */
     body { margin:0; font-family: Arial, sans-serif; background-color:#0d1b3a; color:white; display:flex; flex-direction:column; min-height:100vh; }
     header { background-color:#0d1b3a; padding:1rem; text-align:center; border-bottom:2px solid #142952; }
     main { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1rem; width:100%; max-width:900px; margin:0 auto; }
     h2 { margin-bottom:1rem; }
 
+    /* Search */
     .search-box { display:flex; max-width:500px; width:100%; }
     .search-box input { flex:1; padding:0.75rem; font-size:1rem; border:none; border-radius:8px 0 0 8px; outline:none; }
     .btn-search { background-color:#ff9900; border:none; color:white; padding:0 1.5rem; font-size:1rem; cursor:pointer; border-radius:0 8px 8px 0; transition: background-color .3s; }
     .btn-search:hover { background-color:#e68a00; }
 
     .result { margin-top:1.5rem; font-size:1.1rem; }
-    .muted { color:#ccc; font-size:.9rem; margin-top:.5rem; }
     footer { background-color:#0d1b3a; text-align:center; padding:1rem; border-top:2px solid #142952; font-size:0.9rem; color:#ccc; }
   </style>
 </head>
@@ -50,8 +59,6 @@
       <button class="btn-search" id="btnSearch">Search</button>
     </div>
 
-    <div class="muted">Free plan: 3 checks/day. We’ll show your remaining quota after each search.</div>
-
     <div style="margin-top: 1rem;">
       <button class="btn" onclick="window.location.href='/en/namegasm-pagina-inicial-basica'">Go Back</button>
     </div>
@@ -63,21 +70,21 @@
         <h2>Basic</h2>
         <p class="price">Free</p>
         <p class="desc">Limited domain name searches per day (3 daily).</p>
-        <a href="#" class="btn">Start</a>
+        <a href="#" class="btn select-plan" data-plan="basic">Start</a>
       </div>
 
       <div class="card">
         <h2>Premium</h2>
         <p class="price">6 €/month</p>
         <p class="desc">Unlimited searches, history, and personalized suggestions.</p>
-        <a href="#" class="btn">Subscribe</a>
+        <a href="#" class="btn select-plan" data-plan="premium">Subscribe</a>
       </div>
 
       <div class="card">
         <h2>Domains</h2>
         <p class="price">From 66 €/year</p>
         <p class="desc">Register your domain in multiple new and classic extensions.</p>
-        <a href="#" class="btn">Register</a>
+        <a href="#" class="btn select-plan" data-plan="domains">Register</a>
       </div>
     </div>
   </main>
@@ -102,7 +109,7 @@
   </footer>
 
   <script>
-    // --- Validation + free endpoint with quota headers ---
+    // Validate domain
     function isValidDomain(d) {
       const s = (d || "").trim().toLowerCase();
       if (!s || s.length > 253 || s.includes("..")) return false;
@@ -110,6 +117,7 @@
       return re.test(s);
     }
 
+    // Real search (unlimited endpoint)
     async function searchDomain() {
       const input = document.getElementById('domainInput');
       const resultDiv = document.getElementById('result');
@@ -125,22 +133,19 @@
       resultDiv.style.color = "#fff";
 
       try {
-        const response = await fetch("/api/search-domain-free", {
+        const response = await fetch("/api/search-domain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ domain })
         });
 
         const data = await response.json().catch(()=>({}));
-        const remain = response.headers.get("X-Remaining");
-        const limit  = response.headers.get("X-Daily-Limit");
 
         if (response.ok) {
           const availabilityText = data.available ? "Available" : "Not available";
           resultDiv.innerHTML = `
             <div>Domain: <strong>${data.domain}</strong></div>
             <div>Status: <strong style="color:${data.available ? 'lightgreen' : 'red'}">${availabilityText}</strong></div>
-            ${remain !== null && limit !== null ? `<div class="muted">Daily quota: ${remain}/${limit} remaining</div>` : ''}
           `;
         } else {
           resultDiv.textContent = (data && data.error) ? data.error : "Search error.";
@@ -158,20 +163,30 @@
       if (e.key === 'Enter') { e.preventDefault(); searchDomain(); }
     });
 
-    // --- Chatbot behavior ---
+    // CTAs → save plan then go to checkout (EN)
+    (function(){
+      const links = document.querySelectorAll('.select-plan');
+      links.forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const plan = a.getAttribute('data-plan') || 'basic';
+          localStorage.setItem('ng_selected_plan', plan);
+          window.location.href = '/en/checkout';
+        });
+      });
+    })();
+
+    // Chatbot behavior
     (function(){
       const toggle = document.getElementById("chatbot-toggle");
       const box = document.getElementById("chatbot-box");
       const input = document.getElementById("chatbot-input");
       const send = document.getElementById("chatbot-send");
       const messages = document.getElementById("chatbot-messages");
-
       if(!toggle || !box) return;
-
       toggle.addEventListener("click", () => {
         box.style.display = (box.style.display === "none" || !box.style.display) ? "block" : "none";
       });
-
       function addMsg(who, text){
         const wrap = document.createElement('div');
         wrap.style.marginBottom = '10px';
@@ -179,7 +194,6 @@
         messages.appendChild(wrap);
         messages.scrollTop = messages.scrollHeight;
       }
-
       send.addEventListener("click", () => {
         const text = (input.value || "").trim();
         if(!text) return;
