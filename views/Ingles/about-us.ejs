@@ -1,103 +1,164 @@
-﻿<!DOCTYPE html>
-	<html>
-	<head>
-	   <title></title>
-	   <meta charset="UTF-8">
-	   <style>
-	   /* Botón reutilizable de Inicio */
-	.btn-inicio {
-	  	background-color: #ff9900;
-	  	border: none;
- 	 	color: white;
- 	 	padding: 0.75rem 1.5rem;
- 	 	font-size: 1rem;
-  		cursor: pointer;
-  		border-radius: 8px;
-  		transition: background-color 0.3s ease;
-  		margin-top: 1rem;
-	}
-	.btn-inicio:hover {
-  	background-color: #e68a00;
-	}
-	</style>
-	</head>
-	<body>
-<section class="about-us" style="max-width:900px; margin:0 auto; padding:40px; font-family:Arial, sans-serif; line-height:1.6;">
-  <h1 style="color:#0d1b3a; text-align:center; margin-bottom:20px;">About Us</h1>
-  
-  <p>
-    Welcome to <strong>NameGasm</strong>, a platform created to make domain search, hosting, and online tools simple, fast, and accessible for everyone.
-  </p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Us — NameGasmic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Botón reutilizable de Inicio */
+    .btn-inicio {
+      background-color: #ff9900;
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+    }
+    .btn-inicio:hover { background-color: #e68a00; }
 
-  <h2 style="color:#0d1b3a; margin-top:30px;">Who We Are</h2>
-  <p>
-    We are a team passionate about technology advances. Our goal is to empower individuals and businesses to grow online with the right tools and resources.
-  </p>
- 
-  <h2 style="color:#0d1b3a; margin-top:30px;">What We Do</h2>
-  <p>
-    At NameGasm, you can find domain names, hosting services, and access digital growth tools, all designed to help boost your success in your online journey.
-  </p>
+    /* Estilos mínimos del formulario */
+    .wrap { max-width: 900px; margin: 0 auto; padding: 40px; font-family: Arial, sans-serif; line-height: 1.6; }
+    .wrap h1 { color: #0d1b3a; text-align: center; margin-bottom: 20px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; margin-bottom: 6px; font-weight: bold; }
+    .field input, .field textarea {
+      width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px;
+    }
+    .btn-send {
+      padding: 12px 18px; cursor: pointer; border: none; border-radius: 999px;
+      background: #0d1b3a; color: #fff; font-weight: bold;
+    }
+    #status { margin-top: 12px; font-size: 14px; }
+  </style>
+</head>
+<body>
 
-  <h2 style="color:#0d1b3a; margin-top:30px;">Our Mission & Vision</h2>
-  <p>
-    Our mission is to provide affordable, reliable, and innovative digital solutions. We envision a world where anyone can build and expand their online presence without barriers.
-  </p>
+  <!-- CONTACT US -->
+  <section class="wrap">
+    <h1>Contact Us</h1>
+    <p style="text-align:center; margin-bottom: 18px;">
+      Send us your message and we will get back to you shortly.
+    </p>
 
-  <h2 style="color:#0d1b3a; margin-top:30px;">Why Choose Us</h2>
-  <ul>
-    <li>Fast and secure services</li>
-    <li>Easy-to-use tools</li>
-    <li>Affordable solutions</li>
-    <li>24/7 customer support</li>
-  </ul>
+    <form id="contact-form" novalidate>
+      <!-- Honeypot invisible (anti-spam) -->
+      <input type="text" name="website" id="website" style="position:absolute;left:-9999px;" tabindex="-1" autocomplete="off">
 
-  <p style="margin-top:30px; text-align:center;">
-    <strong>Join us at NameGasm and let’s build your online success together!</strong>
-  </p>
-</section>
-<div style="text-align: center;">
-  	<button class="btn-inicio" onclick="window.location.href='/en'">
-   	 Go Back
-  	</button>
-</div>
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="from_name" type="text" required placeholder="Your name">
+      </div>
 
-<!-- Chatbot Universal -->
-		<div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
-  		<button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
-   	 💬 Chat
-  		</button>
-  		<div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
-    		<div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
-    		<div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
-    		<div style="display:flex; border-top:1px solid #ccc;">
-     	 <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
-      	<button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
-    	</div>
-  	</div>
-	</div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="reply_to" type="email" required placeholder="you@example.com">
+      </div>
 
-	<script>
-  		const toggle = document.getElementById("chatbot-toggle");
-  		const box = document.getElementById("chatbot-box");
-  		const input = document.getElementById("chatbot-input");
-  		const send = document.getElementById("chatbot-send");
-  		const messages = document.getElementById("chatbot-messages");
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="6" required placeholder="How can we help?"></textarea>
+      </div>
 
-  	toggle.addEventListener("click", () => {
-    	box.style.display = box.style.display === "none" ? "block" : "none";
-  	});
+      <button id="sendBtn" type="submit" class="btn-send">Send</button>
+      <p id="status"></p>
+    </form>
+  </section>
 
- 		 send.addEventListener("click", () => {
-   		 const text = input.value.trim();
-   		 if(text){
-     		 messages.innerHTML += `<div style="margin-bottom:10px;"><strong>Tú:</strong> ${text}</div>`;
-    		  messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong>Thank you, your answer is on its way.</div>`;
-    		  input.value = "";
-    		  messages.scrollTop = messages.scrollHeight;
-  	  }
-  	});
-	</script>
+  <div style="text-align: center;">
+    <button class="btn-inicio" onclick="window.location.href='/en'">Go Back</button>
+  </div>
 
-	</body>
+  <!-- Chatbot Universal (sin cambios) -->
+  <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
+    <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+      💬 Chat
+    </button>
+    <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById("chatbot-toggle");
+    const box = document.getElementById("chatbot-box");
+    const input = document.getElementById("chatbot-input");
+    const send = document.getElementById("chatbot-send");
+    const messages = document.getElementById("chatbot-messages");
+
+    toggle.addEventListener("click", () => {
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    });
+
+    send.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (text) {
+        messages.innerHTML += `<div style="margin-bottom:10px;"><strong>You:</strong> ${text}</div>`;
+        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thank you, your answer is on its way.</div>`;
+        input.value = "";
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // ======= REEMPLAZA ESTOS TRES VALORES =======
+    emailjs.init("TU_PUBLIC_KEY");           // <-- tu PUBLIC KEY
+    const SERVICE_ID  = "TU_SERVICE_ID";     // <-- tu SERVICE ID
+    const TEMPLATE_ID = "TU_TEMPLATE_ID";    // <-- tu TEMPLATE ID
+    // ============================================
+
+    function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    document.getElementById('contact-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const status = document.getElementById('status');
+      const btn = document.getElementById('sendBtn');
+
+      // Honeypot
+      if (document.getElementById('website').value.trim() !== "") {
+        status.textContent = "Validation error.";
+        return;
+      }
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (!name || !validEmail(email) || !message) {
+        status.textContent = "Please check the fields.";
+        return;
+      }
+
+      btn.disabled = true;
+      status.textContent = "Sending…";
+
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        from_name: name,
+        reply_to: email,
+        message: message,
+        site_source: "NameGasmic - Contact Us"
+      })
+      .then(() => {
+        status.textContent = "Message sent! We'll contact you soon.";
+        document.getElementById('contact-form').reset();
+      })
+      .catch(() => {
+        status.textContent = "Error sending. Try again later.";
+      })
+      .finally(() => {
+        btn.disabled = false;
+      });
+    });
+  </script>
+</body>
 </html>
