@@ -1,235 +1,201 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Domain - NameGasm</title>
+  <title>Buscar Dominio - NameGasmic</title>
   <style>
-    /* === Estilo base (tus colores) === */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0d1b3a;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background-color: #0d1b3a;
-      padding: 1rem;
-      text-align: center;
-      border-bottom: 2px solid #142952;
-    }
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-    }
-    h2 { margin-bottom: 1rem; }
-    .search-box { display: flex; max-width: 500px; width: 100%; }
-    .search-box input {
-      flex: 1; padding: 0.75rem; font-size: 1rem; border: none;
-      border-radius: 8px 0 0 8px; outline: none;
-    }
-    .btn {
-      background-color: #ff9900; border: none; color: white;
-      padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer;
-      border-radius: 8px; transition: background-color 0.3s ease;
-      text-decoration: none; display:inline-block;
-    }
-    .btn:hover { background-color: #e68a00; }
-    .search-box button { border-radius: 0 8px 8px 0; padding: 0 1.5rem; }
-    .result { margin-top: 1.5rem; font-size: 1.1rem; min-height: 1.5rem; }
+    body { margin:0; font-family: Arial, sans-serif; background-color:#0d1b3a; color:white; display:flex; flex-direction:column; min-height:100vh; }
+    header { background-color:#0d1b3a; padding:1rem; text-align:center; border-bottom:2px solid #142952; }
+    main { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1rem; width:100%; max-width:900px; margin:0 auto; }
+    h2 { margin-bottom:1rem; }
 
-    /* Cards (como en tu página) */
-    .pricing-container {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 10px; margin: 20px 0; width: 100%; max-width: 900px;
-    }
-    .card {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      padding: 20px; text-align: center; transition: transform 0.2s ease-in-out;
-    }
+    .search-box { display:flex; max-width:500px; width:100%; }
+    .search-box input { flex:1; padding:0.75rem; font-size:1rem; border:none; border-radius:8px 0 0 8px; outline:none; }
+    .btn-search { background-color:#ff9900; border:none; color:white; padding:0 1.5rem; font-size:1rem; cursor:pointer; border-radius:0 8px 8px 0; transition: background-color .3s; }
+    .btn-search:hover { background-color:#e68a00; }
+
+    .btn, .btn a { display:inline-block; padding:10px 20px; background:#ffd700; color:#0d1b3a; font-weight:bold; border-radius:8px; text-decoration:none; transition:background .3s; border:none; cursor:pointer; }
+    .btn:hover { background:#ffcc00; }
+
+    .result { margin-top:1.5rem; font-size:1.1rem; }
+    .muted { color:#ccc; font-size:.9rem; margin-top:.5rem; }
+
+    .pricing-container { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px; margin:20px 0; width:100%; }
+    .card { background: linear-gradient(135deg, #1e3c72, #2a5298); border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.3); padding:20px; text-align:center; transition: transform .2s; }
     .card:hover { transform: translateY(-5px); }
-    .card h2 { margin: 0; font-size: 14px; color: #fff; letter-spacing: .5px; }
-    .price { font-size: 16px; font-weight: bold; margin: 15px 0; color: #ffd700; }
-    .desc { font-size: 12px; margin-bottom: 20px; color: #f0f0f0; }
+    .card h2 { margin:0; font-size:16px; color:#fff; }
+    .price { font-size:18px; font-weight:bold; margin:15px 0; color:#ffd700; }
+    .desc { font-size:12px; margin-bottom:20px; color:#f0f0f0; }
 
-    footer {
-      background-color: #0d1b3a; text-align: center; padding: 1rem;
-      border-top: 2px solid #142952; font-size: 0.9rem; color: #ccc;
-    }
+    footer { background-color:#0d1b3a; text-align:center; padding:1rem; border-top:2px solid #142952; font-size:0.9rem; color:#ccc; }
 
-    /* Selector idioma */
     .lang { position:fixed; top:15px; right:50px; z-index:9999; display:flex; gap:10px; }
     .lang img { width:60px; height:50px; cursor:pointer; display:block; }
   </style>
 </head>
 <body>
 
-  <!-- Selector de idiomas (EN -> ES) -->
+  <!-- Selector de idiomas (ES -> EN) -->
   <div class="lang" aria-label="Language selector">
-    <a href="/en/search-domain" title="Versión en Ingles">
-      <img src="/img/bandera-uk.png" alt="Ingles">
+    <a href="/en/search-domain" title="English">
+      <img src="/bandera-uk.png" alt="English">
     </a>
   </div>
 
   <header>
-    <h1>NameGasm — Buscar Dominio</h1>
+    <h1>NameGasmic — Buscar Dominio</h1>
   </header>
 
   <main>
-    <h2>Encuentre su dominio perfecto</h2>
+    <h2>Escribe tu dominio</h2>
 
-    <!-- NUEVO: formulario con id para el fetch -->
-    <form id="domain-search-form" class="search-box">
-      <input type="text" id="domain-input" placeholder="Escriba un Dominio, ej. example.com" required />
-      <button type="submit" class="btn">Búsqueda</button>
-    </form>
+    <div class="search-box">
+      <input type="text" id="domainInput" placeholder="ej. ejemplo.com" />
+      <button class="btn-search" id="btnSearch">Buscar</button>
+    </div>
 
-    <!-- Inicio -->
+    <div class="muted">Plan gratis: 3 consultas por día. Te mostraremos el cupo restante después de cada búsqueda.</div>
+
     <div style="margin-top: 1rem;">
       <a class="btn" href="/es/esp-namegasm-pagina-inicial-basica">Inicio</a>
     </div>
 
-    <!-- NUEVO: resultado -->
-    <div id="domain-result" class="result"></div>
+    <div id="result" class="result"></div>
 
-    <!-- Cards -->
     <div class="pricing-container">
       <div class="card">
         <h2>Básico</h2>
         <p class="price">Gratis</p>
-        <p class="desc">Búsquedas diarias de nombres Limitadas (3 diarias).</p>
+        <p class="desc">Búsquedas de dominios limitadas por día (3 diarias).</p>
         <a href="#" class="btn">Comenzar</a>
       </div>
 
       <div class="card">
         <h2>Premium</h2>
-        <p class="price">€6 / mes</p>
-        <p class="desc">Búsquedas ilimitadas, historial guardado y sugerencias personales.</p>
-        <a href="#" class="btn">Suscribir</a>
+        <p class="price">6 €/mes</p>
+        <p class="desc">Búsquedas ilimitadas, historial y sugerencias personalizadas.</p>
+        <a href="#" class="btn">Suscribirse</a>
       </div>
 
       <div class="card">
         <h2>Dominios</h2>
-        <p class="price">Comenzándo en €66 / año</p>
-        <p class="desc">Registre su dominio favorito en TLDs clásicas y nuevas .</p>
+        <p class="price">Desde 66 €/año</p>
+        <p class="desc">Registra tu dominio en extensiones clásicas y nuevas.</p>
         <a href="#" class="btn">Registrar</a>
       </div>
     </div>
   </main>
 
-<script>
-  (function () {
-    const form      = document.getElementById('domain-search-form'); // si tienes un <form>
-    const input     = document.getElementById('domain-input');
-    const resultDiv = document.getElementById('domain-result');
+  <!-- Chatbot -->
+  <div id="chatbot-container" style="position:fixed; bottom:3px; right:20px; z-index:9999;">
+    <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
+      💬 Chat
+    </button>
+    <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
+      <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Asistente</div>
+      <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
+      <div style="display:flex; border-top:1px solid #ccc;">
+        <input type="text" id="chatbot-input" placeholder="Escribe aquí..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
+      </div>
+    </div>
+  </div>
 
-    async function buscarDominio(e) {
-      if (e) e.preventDefault();
+  <footer>
+    &copy; 2025 NameGasmic. Todos los derechos reservados.
+  </footer>
 
-      const domain = (input.value || '').trim();
-      if (!domain) {
-        resultDiv.textContent = 'Por favor escribe un dominio para buscar.';
-        resultDiv.style.color = 'white';
+  <script>
+    // --- Validación de dominio + endpoint gratuito con cuota ---
+    function esDominioValido(d) {
+      const s = (d || "").trim().toLowerCase();
+      if (!s || s.length > 253 || s.includes("..")) return false;
+      const re = /^([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i;
+      return re.test(s);
+    }
+
+    async function buscarDominio() {
+      const input = document.getElementById('domainInput');
+      const resultDiv = document.getElementById('result');
+      const domain = input.value.trim();
+
+      if (!esDominioValido(domain)) {
+        resultDiv.textContent = "Por favor escribe un dominio válido (ej. ejemplo.com).";
+        resultDiv.style.color = "yellow";
         return;
       }
 
+      resultDiv.textContent = "Comprobando…";
+      resultDiv.style.color = "#fff";
+
       try {
-        const resp = await fetch('/api/search-domain', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/search-domain-free", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ domain })
         });
 
-        const data = await resp.json();
+        const data = await response.json().catch(()=>({}));
 
-        if (!resp.ok) {
-          resultDiv.textContent = data.error || 'No se puede revisar disponibilidad.';
-          resultDiv.style.color = 'red';
-          return;
+        const remain = response.headers.get("X-Remaining");
+        const limit  = response.headers.get("X-Daily-Limit");
+
+        if (response.ok) {
+          const disponible = !!data.available;
+          resultDiv.innerHTML = `
+            <div>Dominio: <strong>${data.domain}</strong></div>
+            <div>Estado: <strong style="color:${disponible ? 'lightgreen' : 'red'}">
+              ${disponible ? 'Disponible' : 'No disponible'}
+            </strong></div>
+            ${remain !== null && limit !== null ? `<div class="muted">Cupo diario: ${remain}/${limit} restantes</div>` : ''}
+          `;
+        } else {
+          resultDiv.textContent = (data && data.error) ? data.error : "Error en la búsqueda.";
+          resultDiv.style.color = "red";
         }
-
-        resultDiv.textContent = `Dominio: ${data.domain} → Disponible: ${data.available}`;
-        resultDiv.style.color = data.available ? 'lightgreen' : 'red';
       } catch (err) {
-        console.error(err);
-        resultDiv.textContent = 'Servidor no disponible.';
-        resultDiv.style.color = 'red';
+        console.error("Error:", err);
+        resultDiv.textContent = "Servidor no disponible.";
+        resultDiv.style.color = "red";
       }
     }
 
-    // si usas <form id="domain-search-form"> con botón type="submit"
-    if (form) form.addEventListener('submit', buscarDominio);
-
-    // por si tu botón usa onclick="buscarDominio()"
-    window.buscarDominio = buscarDominio;
-  })();
-</script>
-
-
-  <!-- NUEVO: Chatbot (EN) -->
-<div id="chatbot-container" style="position:fixed; bottom:3px; right:20px; z-index:9999;">
-  <button id="chatbot-toggle" style="background:#0073e6; color:#fff; border:none; padding:12px 18px; border-radius:50px; cursor:pointer; box-shadow:0px 4px 8px rgba(0,0,0,0.2);">
-    💬 Chat
-  </button>
-  <div id="chatbot-box" style="display:none; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0px 4px 10px rgba(0,0,0,0.3); position:absolute; bottom:60px; right:0; overflow:hidden;">
-    <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
-    <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
-    <div style="display:flex; border-top:1px solid #ccc;">
-      <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
-      <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // NUEVO: lógica mínima del chatbot (EN)
-  (function(){
-    var toggle = document.getElementById("chatbot-toggle");
-    var box = document.getElementById("chatbot-box");
-    var input = document.getElementById("chatbot-input");
-    var send = document.getElementById("chatbot-send");
-    var messages = document.getElementById("chatbot-messages");
-
-    if(!toggle || !box) return;
-
-    toggle.addEventListener("click", function(){
-      box.style.display = (box.style.display === "none" || !box.style.display) ? "block" : "none";
+    document.getElementById('btnSearch').addEventListener('click', buscarDominio);
+    document.getElementById('domainInput').addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') { e.preventDefault(); buscarDominio(); }
     });
 
-    function addMsg(who, text){
-      var wrap = document.createElement('div');
-      wrap.style.marginBottom = '10px';
-      wrap.innerHTML = "<strong>"+who+":</strong> " + text;
-      messages.appendChild(wrap);
-      messages.scrollTop = messages.scrollHeight;
-    }
+    // --- Chatbot ---
+    (function(){
+      const toggle = document.getElementById("chatbot-toggle");
+      const box = document.getElementById("chatbot-box");
+      const input = document.getElementById("chatbot-input");
+      const send = document.getElementById("chatbot-send");
+      const messages = document.getElementById("chatbot-messages");
 
-    send.addEventListener("click", function(){
-      var text = (input.value || "").trim();
-      if(!text) return;
-      addMsg('You', text);
-      addMsg('Bot', 'Thank you, your answer is on its way.');
-      input.value = "";
-    });
+      if(!toggle || !box) return;
 
-    input.addEventListener('keydown', function(e){
-      if(e.key === 'Enter'){ e.preventDefault(); send.click(); }
-    });
-  })();
-</script>
+      toggle.addEventListener("click", () => {
+        box.style.display = (box.style.display === "none" || !box.style.display) ? "block" : "none";
+      });
 
+      function addMsg(who, text){
+        const wrap = document.createElement('div');
+        wrap.style.marginBottom = '10px';
+        wrap.innerHTML = "<strong>"+who+":</strong> " + text;
+        messages.appendChild(wrap);
+        messages.scrollTop = messages.scrollHeight;
+      }
 
-  <footer>
-    &copy; 2025 NameGasm. Todos los derechos reservados.
-  </footer>
+      send.addEventListener("click", () => {
+        const text = (input.value || "").trim();
+        if(!text) return;
+        addMsg('Tú', text);
+        addMsg('Bot', '¡Gracias! Te responderemos pronto.');
+        input.value = "";
+      });
+    })();
+  </script>
 </body>
 </html>
-
