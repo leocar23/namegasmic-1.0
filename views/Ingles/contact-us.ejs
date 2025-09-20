@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,7 +22,7 @@
       color: white; border: none; cursor: pointer; border-radius: 8px;
     }
     button:hover { background-color: #005bb5; }
-    #result { margin-top: 20px; font-size: 18px; }
+    #result { margin-top: 20px; font-size: 18px; color: #fff; }
   </style>
 </head>
 <body>
@@ -36,7 +37,7 @@
   <h1>Contáctanos - E-mail</h1>
   <p style="color:white">Envíanos un mensaje y te escribiremos tan pronto sea posible.</p>
 
-  <!-- Form conectado al backend -->
+  <!-- Form con EmailJS (sin backend) -->
   <form id="emailForm">
     <input type="text" id="name" placeholder="Su nombre" required><br>
     <input type="email" id="email" placeholder="Su correo" required><br>
@@ -48,47 +49,6 @@
   <div style="text-align: center;">
     <a class="btn-inicio" href="/es/esp-namegasm-pagina-inicial-basica">Volver a Inicio</a>
   </div>
-
- <script>
-  async function sendEmail(event) {
-    event.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const message = document.getElementById('message').value.trim();
-    const result = document.getElementById('result');
-
-    if (!name || !email || !message) {
-      result.textContent = "⚠ Please fill out all fields.";
-      result.style.color = "yellow";
-      return;
-    }
-
-    try {
-      const resp = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message })
-      });
-
-      const data = await resp.json();
-      if (!resp.ok || !data.ok) {
-        result.textContent = data.error || "❌ Could not send your message.";
-        result.style.color = "red";
-        return;
-      }
-
-      result.textContent = "✅ Thank you! Your message was sent.";
-      result.style.color = "lightgreen";
-      // opcional: limpiar campos
-      document.getElementById('emailForm').reset();
-    } catch (e) {
-      console.error(e);
-      result.textContent = "❌ Server not available.";
-      result.style.color = "red";
-    }
-  }
-</script>
-
 
   <!-- Chatbot Universal (una sola instancia) -->
   <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
@@ -104,6 +64,54 @@
       </div>
     </div>
   </div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    // Reemplaza solo esta key por la tuya
+    emailjs.init("TU_PUBLIC_KEY"); // <-- pega aquí tu Public Key
+
+    const SERVICE_ID  = "service_n7ln6lb";     // tu Service ID (ya creado)
+    const TEMPLATE_ID = "template_3fqk4vd";    // tu Template ID
+
+    function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    async function sendEmail(event) {
+      event.preventDefault();
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const result  = document.getElementById('result');
+
+      if (!name || !validEmail(email) || !message) {
+        result.textContent = "⚠ Por favor completa todos los campos con datos válidos.";
+        result.style.color = "yellow";
+        return;
+      }
+
+      result.textContent = "Enviando…";
+      result.style.color = "#fff";
+
+      try {
+        await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+          from_name: name,
+          reply_to: email,
+          message: message,
+          site_source: "NameGasmic - Contact (ES)"
+        });
+        result.textContent = "✅ ¡Gracias! Tu mensaje fue enviado.";
+        result.style.color = "lightgreen";
+        document.getElementById('emailForm').reset();
+      } catch (e) {
+        console.error(e);
+        result.textContent = "❌ No se pudo enviar. Intenta más tarde.";
+        result.style.color = "red";
+      }
+    }
+
+    // Conectar el submit del formulario a EmailJS
+    document.getElementById('emailForm').addEventListener('submit', sendEmail);
+  </script>
 
   <script>
     (function(){
@@ -131,7 +139,7 @@
         const text = (input.value || "").trim();
         if(!text) return;
         addMsg('Tú', text);
-        addMsg('Bot', 'Gracias por tu mensaje, pronto tendrás respuesta.');
+        addMsg('Bot', 'Gracias, pronto te responderemos.');
         input.value = "";
       });
     })();
