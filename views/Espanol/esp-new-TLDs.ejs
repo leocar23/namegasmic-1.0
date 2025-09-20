@@ -158,44 +158,109 @@
     </button>
   </div>
 
-  <script>
-    function goToSearch(domain){
-      try{
-        localStorage.setItem('ng_prefill_domain', domain);
-      }catch(e){}
-      window.location.href = '/es/esp-search-domain';
+<script>
+  function selectDomain(domain){
+    try { localStorage.setItem('ng_prefill_domain', domain); } catch(e){}
+    // Aquí decides a dónde continúas: a la búsqueda o a un checkout
+    window.location.href = '/es/esp-search-domain';
+  }
+
+  function badge(text, color){
+    return `<span style="
+      display:inline-block;padding:2px 8px;border-radius:999px;
+      background:${color};color:#0d1b3a;font-weight:700;font-size:12px;
+    ">${text}</span>`;
+  }
+
+  async function checkDomain(domain){
+    try{
+      const resp = await fetch('/api/search-domain', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ domain })
+      });
+      const data = await resp.json().catch(()=>({}));
+      if(!resp.ok) return { domain, available: null };
+      return { domain: data.domain || domain, available: !!data.available };
+    }catch(e){
+      return { domain, available: null };
+    }
+  }
+
+  function renderResults(resultEl, checks){
+    const disponibles = checks.filter(x => x.available === true);
+    const noDisp      = checks.filter(x => x.available === false);
+    const unknown     = checks.filter(x => x.available === null);
+
+    let html = '';
+
+    if (disponibles.length) {
+      html += `<h3>Disponibles</h3><ul>`;
+      html += disponibles.map(x => `
+        <li style="margin:.4rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('Disponible', 'lightgreen')}
+          <button class="btn" style="margin-left:auto" onclick="selectDomain('${x.domain}')">Continuar</button>
+        </li>
+      `).join('');
+      html += `</ul>`;
+    } else {
+      html += `<p>No encontramos disponibles entre esas sugerencias.</p>`;
     }
 
-    function li(domain){
-      return `<li><a href="#" onclick="goToSearch('${domain}');return false;">${domain}</a></li>`;
+    if (noDisp.length) {
+      html += `<h3 style="margin-top:1rem">Ocupados</h3><ul>`;
+      html += noDisp.map(x => `
+        <li style="margin:.3rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('No disponible', '#ff8a8a')}
+        </li>
+      `).join('');
+      html += `</ul>`;
     }
 
-    function searchTLDs() {
-      const keyword = (document.getElementById('keyword').value || '').trim();
-      const result = document.getElementById('result');
-
-      if (!keyword) {
-        result.innerHTML = "⚠ Introduce una palabra clave.";
-        return;
-      }
-
-      // Simulación simple con enlaces que llevan a la búsqueda y pre-rellenan el dominio
-      const suggest = [
-        `${keyword}.tech`,
-        `${keyword}.online`,
-        `${keyword}.xyz`,
-        `${keyword}.store`
-      ];
-
-      result.innerHTML = `
-        Nuevos TLD disponibles para <b>${keyword}</b>:
-        <ul style="margin-top:8px;">
-          ${suggest.map(li).join('')}
-        </ul>
-        <small>Haz clic en cualquiera para revisarlo en la búsqueda.</small>
-      `;
+    if (unknown.length) {
+      html += `<h3 style="margin-top:1rem">Sin verificar</h3><ul>`;
+      html += unknown.map(x => `
+        <li style="margin:.3rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('Error al verificar', '#ffe08a')}
+        </li>
+      `).join('');
+      html += `</ul>`;
     }
-  </script>
+
+    resultEl.innerHTML = html;
+  }
+
+  async function searchTLDs() {
+    const keyword = (document.getElementById('keyword').value || '').trim();
+    const result  = document.getElementById('result');
+
+    if (!keyword) {
+      result.innerHTML = "⚠ Introduce una palabra clave.";
+      return;
+    }
+
+    // Candidatos a comprobar
+    const candidates = [
+      `${keyword}.tech`,
+      `${keyword}.online`,
+      `${keyword}.xyz`,
+      `${keyword}.store`
+    ];
+
+    result.innerHTML = "Comprobando disponibilidad…";
+
+    // Verificar en paralelo
+    const checks = await Promise.all(
+      candidates.map(d => checkDomain(d))
+    );
+
+    renderResults(result, checks);
+  }
+</script>
+
 
   <!-- Chatbot Universal -->
   <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
@@ -252,3 +317,4 @@
 
 </body>
 </html>
+
