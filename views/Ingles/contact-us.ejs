@@ -39,7 +39,10 @@
   <form id="emailForm">
     <input type="text" id="name" placeholder="Your name" required><br>
     <input type="email" id="email" placeholder="Your email" required><br>
+    <input type="text" id="subject" placeholder="Subject (optional)"><br>
     <textarea id="message" placeholder="Your message" required></textarea><br>
+    <!-- Honeypot (anti-spam) -->
+    <input type="text" id="website" name="website" style="display:none;" tabindex="-1" autocomplete="off">
     <button type="submit">Send Message</button>
   </form>
   <div id="result"></div>
@@ -77,8 +80,17 @@
       event.preventDefault();
       const name    = document.getElementById('name').value.trim();
       const email   = document.getElementById('email').value.trim();
+      const subject = (document.getElementById('subject').value || '').trim();
+      const bait    = (document.getElementById('website').value || '').trim(); // honeypot
       const message = document.getElementById('message').value.trim();
       const result  = document.getElementById('result');
+
+      // Honeypot: if filled, it's a bot
+      if (bait) {
+        result.textContent = "❌ Invalid submission.";
+        result.style.color = "red";
+        return;
+      }
 
       if (!name || !validEmail(email) || !message) {
         result.textContent = "⚠ Please complete all fields with valid information.";
@@ -94,6 +106,7 @@
           from_name: name,
           reply_to: email,
           message: message,
+          subject: subject || "New contact from NameGasmic (EN)",
           site_source: "NameGasmic - Contact (EN)"
         });
         result.textContent = "✅ Thank you! Your message has been sent.";
@@ -143,5 +156,3 @@
 
 </body>
 </html>
-
-
