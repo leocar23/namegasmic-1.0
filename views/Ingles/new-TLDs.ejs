@@ -159,44 +159,106 @@
     </button>
   </div>
 
-  <script>
-    function goToSearch(domain){
-      try{
-        localStorage.setItem('ng_prefill_domain', domain);
-      }catch(e){}
-      window.location.href = '/en/search-domain';
+ <script>
+  function selectDomain(domain){
+    try { localStorage.setItem('ng_prefill_domain', domain); } catch(e){}
+    // Choose where to continue: search page or checkout
+    window.location.href = '/en/search-domain';
+  }
+
+  function badge(text, color){
+    return `<span style="
+      display:inline-block;padding:2px 8px;border-radius:999px;
+      background:${color};color:#0d1b3a;font-weight:700;font-size:12px;
+    ">${text}</span>`;
+  }
+
+  async function checkDomain(domain){
+    try{
+      const resp = await fetch('/api/search-domain', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ domain })
+      });
+      const data = await resp.json().catch(()=>({}));
+      if(!resp.ok) return { domain, available: null };
+      return { domain: data.domain || domain, available: !!data.available };
+    }catch(e){
+      return { domain, available: null };
+    }
+  }
+
+  function renderResults(resultEl, checks){
+    const available = checks.filter(x => x.available === true);
+    const taken     = checks.filter(x => x.available === false);
+    const unknown   = checks.filter(x => x.available === null);
+
+    let html = '';
+
+    if (available.length) {
+      html += `<h3>Available</h3><ul>`;
+      html += available.map(x => `
+        <li style="margin:.4rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('Available', 'lightgreen')}
+          <button class="btn" style="margin-left:auto" onclick="selectDomain('${x.domain}')">Continue</button>
+        </li>
+      `).join('');
+      html += `</ul>`;
+    } else {
+      html += `<p>No available options among those suggestions.</p>`;
     }
 
-    function li(domain){
-      return `<li><a href="#" onclick="goToSearch('${domain}');return false;">${domain}</a></li>`;
+    if (taken.length) {
+      html += `<h3 style="margin-top:1rem">Taken</h3><ul>`;
+      html += taken.map(x => `
+        <li style="margin:.3rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('Not available', '#ff8a8a')}
+        </li>
+      `).join('');
+      html += `</ul>`;
     }
 
-    function searchTLDs() {
-      const keyword = (document.getElementById('keyword').value || '').trim();
-      const result = document.getElementById('result');
-
-      if (!keyword) {
-        result.innerHTML = "⚠ Please enter a keyword.";
-        return;
-      }
-
-      // Simple suggestions with links to Search Domain (prefilled)
-      const suggest = [
-        `${keyword}.tech`,
-        `${keyword}.online`,
-        `${keyword}.xyz`,
-        `${keyword}.store`
-      ];
-
-      result.innerHTML = `
-        New TLD suggestions for <b>${keyword}</b>:
-        <ul style="margin-top:8px;">
-          ${suggest.map(li).join('')}
-        </ul>
-        <small>Click any option to check it on the search page.</small>
-      `;
+    if (unknown.length) {
+      html += `<h3 style="margin-top:1rem">Unverified</h3><ul>`;
+      html += unknown.map(x => `
+        <li style="margin:.3rem 0;display:flex;align-items:center;gap:8px;">
+          <span style="min-width:200px">${x.domain}</span>
+          ${badge('Check error', '#ffe08a')}
+        </li>
+      `).join('');
+      html += `</ul>`;
     }
-  </script>
+
+    resultEl.innerHTML = html;
+  }
+
+  async function searchTLDs() {
+    const keyword = (document.getElementById('keyword').value || '').trim();
+    const result  = document.getElementById('result');
+
+    if (!keyword) {
+      result.innerHTML = "⚠ Please enter a keyword.";
+      return;
+    }
+
+    const candidates = [
+      `${keyword}.tech`,
+      `${keyword}.online`,
+      `${keyword}.xyz`,
+      `${keyword}.store`
+    ];
+
+    result.innerHTML = "Checking availability…";
+
+    const checks = await Promise.all(
+      candidates.map(d => checkDomain(d))
+    );
+
+    renderResults(result, checks);
+  }
+</script>
 
   <!-- Universal Chatbot -->
   <div id="chatbot-container" style="position:fixed; bottom:20px; right:20px; z-index:9999;">
@@ -253,3 +315,4 @@
 
 </body>
 </html>
+
