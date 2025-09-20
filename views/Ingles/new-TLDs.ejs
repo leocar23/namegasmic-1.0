@@ -1,14 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>New TLDs</title>
   <style>
-    /* === Equal cards and readable text === */
     :root{
-      --card-w: 260px;   /* tweak width */
-      --card-h: 180px;   /* tweak height */
+      --card-w: 260px;
+      --card-h: 180px;
       --fs-title: 16px;
       --fs-price: 14px;
       --fs-desc: 12px;
@@ -20,7 +19,7 @@
       grid-template-columns: repeat(auto-fit, minmax(var(--card-w), 1fr));
       gap: 32px;
       margin: 20px auto;
-      max-width: 900px; /* center wrapper */
+      max-width: 900px;
     }
 
     .pricing-container .card{
@@ -31,7 +30,6 @@
       text-align: center;
       transition: transform 0.2s ease-in-out;
 
-      /* unify size */
       width: var(--card-w);
       height: var(--card-h);
       margin: 0 auto;
@@ -84,6 +82,7 @@
       text-align: center;
       margin-top: 50px;
       background-color: #0d1b3a;
+      color: #fff;
     }
     h1 { color: white; }
     input[type="text"] {
@@ -94,8 +93,7 @@
       border-radius: 4px;
     }
 
-    /* Reusable Home button */
-    .btn-home {
+    .btn-inicio {
       background-color: #0099cc;
       border: none;
       color: white;
@@ -106,7 +104,7 @@
       transition: background-color 0.3s ease;
       margin-top: 1rem;
     }
-    .btn-home:hover { background-color: #007a99; }
+    .btn-inicio:hover { background-color: #007a99; }
 
     button {
       padding: 10px 20px;
@@ -128,19 +126,27 @@
       margin-left:auto;
       margin-right:auto;
     }
+    #result a{
+      color:#ffd700;
+      text-decoration:none;
+    }
+    #result a:hover{
+      text-decoration:underline;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Language switcher (EN → ES) with robust fallbacks -->
+  <!-- Language switch (EN → ES) -->
   <div style="position:fixed; top:15px; right:50px; z-index:9999; display:flex; gap:10px;">
-    <a href="/es/nuevos-TLDs" hreflang="es" onclick="return goES(event)">
-      <img src="/img/bandera-es.png" alt="Español" width="60" height="50" style="cursor:pointer;">
+    <a href="/es/esp-new-TLDs" hreflang="es">
+      <!-- alias served by index.js -->
+      <img src="/bandera-es.png" alt="Español" width="60" height="50" style="cursor:pointer;">
     </a>
   </div>
 
   <h1>New TLDs</h1>
-  <p style="color:white">Discover and secure the newest and safest domain extensions today.</p>
+  <p>Discover and secure the newest and safest domain extensions today.</p>
 
   <input type="text" id="keyword" placeholder="Enter a keyword">
   <button onclick="searchTLDs()">Search</button>
@@ -148,38 +154,25 @@
   <div id="result"></div>
 
   <div style="text-align: center;">
-    <!-- Adjust the path if your English home differs -->
-    <button class="btn-home" onclick="window.location.href='/en/namegasm-pagina-inicial-basica'">
+    <button class="btn-inicio" onclick="window.location.href='/en/namegasm-pagina-inicial-basica'">
       Go Back
     </button>
   </div>
 
   <script>
-    // Try several likely Spanish routes; redirect to the first that exists.
-    const esPaths = [
-      "/es/nuevos-TLDs",
-      "/es/new-TLDs",
-      "/es/esp-nuevos-TLDs",
-      "/es/esp-new-TLDs",
-      "/es/nuevos-tlds",
-      "/es/new-tlds"
-    ];
+    function goToSearch(domain){
+      try{
+        localStorage.setItem('ng_prefill_domain', domain);
+      }catch(e){}
+      window.location.href = '/en/search-domain';
+    }
 
-    async function goES(e){
-      e.preventDefault();
-      for (const p of esPaths) {
-        try {
-          const r = await fetch(p, { method: "HEAD" });
-          if (r.ok) { window.location.href = p; return false; }
-        } catch(_) { /* ignore and try next */ }
-      }
-      // Fallback: go to the first option even if HEAD failed
-      window.location.href = esPaths[0];
-      return false;
+    function li(domain){
+      return `<li><a href="#" onclick="goToSearch('${domain}');return false;">${domain}</a></li>`;
     }
 
     function searchTLDs() {
-      const keyword = document.getElementById('keyword').value.trim();
+      const keyword = (document.getElementById('keyword').value || '').trim();
       const result = document.getElementById('result');
 
       if (!keyword) {
@@ -187,13 +180,21 @@
         return;
       }
 
-      // Demo: in production you would call a New TLDs API
-      result.innerHTML =
-        "Available new TLDs for <b>" + keyword + "</b>:<br>" +
-        "- " + keyword + ".tech<br>" +
-        "- " + keyword + ".online<br>" +
-        "- " + keyword + ".xyz<br>" +
-        "- " + keyword + ".store";
+      // Simple suggestions with links to Search Domain (prefilled)
+      const suggest = [
+        `${keyword}.tech`,
+        `${keyword}.online`,
+        `${keyword}.xyz`,
+        `${keyword}.store`
+      ];
+
+      result.innerHTML = `
+        New TLD suggestions for <b>${keyword}</b>:
+        <ul style="margin-top:8px;">
+          ${suggest.map(li).join('')}
+        </ul>
+        <small>Click any option to check it on the search page.</small>
+      `;
     }
   </script>
 
@@ -206,7 +207,7 @@
       <div style="background:#0073e6; color:white; padding:10px; font-weight:bold;">Assistant</div>
       <div id="chatbot-messages" style="height:300px; overflow-y:auto; padding:10px; font-size:14px;"></div>
       <div style="display:flex; border-top:1px solid #ccc;">
-        <input type="text" id="chatbot-input" placeholder="Type here..." style="flex:1; border:none; padding:10px; font-size:14px;">
+        <input type="text" id="chatbot-input" placeholder="Write here..." style="flex:1; border:none; padding:10px; font-size:14px;">
         <button id="chatbot-send" style="background:#0073e6; color:#fff; border:none; padding:10px; cursor:pointer;">➤</button>
       </div>
     </div>
@@ -227,7 +228,7 @@
       const text = input.value.trim();
       if(text){
         messages.innerHTML += `<div style="margin-bottom:10px;"><strong>You:</strong> ${text}</div>`;
-        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thanks for your message, you'll get a reply soon.</div>`;
+        messages.innerHTML += `<div style="margin-bottom:10px; color:#0d1b3a;"><strong>Bot:</strong> Thanks! We'll get back to you soon.</div>`;
         input.value = "";
         messages.scrollTop = messages.scrollHeight;
       }
@@ -244,13 +245,11 @@
 
     <div class="card">
       <h2>Full Version</h2>
-      <p class="price">€2/mo</p>
-      <p class="desc">Access to updated reports and automatic alerts.</p>
+      <p class="price">€2 / month</p>
+      <p class="desc">Up-to-date reports and automatic alerts.</p>
       <a href="#" class="btn">Subscribe</a>
     </div>
   </div>
 
 </body>
 </html>
-
-
