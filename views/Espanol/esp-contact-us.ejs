@@ -39,7 +39,10 @@
   <form id="emailForm">
     <input type="text" id="name" placeholder="Tu nombre" required><br>
     <input type="email" id="email" placeholder="Tu correo" required><br>
+    <input type="text" id="subject" placeholder="Asunto (opcional)"><br>
     <textarea id="message" placeholder="Tu mensaje" required></textarea><br>
+    <!-- Honeypot antispam -->
+    <input type="text" id="website" name="website" style="display:none;" tabindex="-1" autocomplete="off">
     <button type="submit">Enviar Mensaje</button>
   </form>
   <div id="result"></div>
@@ -111,8 +114,17 @@
       e.preventDefault();
       const name    = document.getElementById('name').value.trim();
       const email   = document.getElementById('email').value.trim();
+      const subject = (document.getElementById('subject').value || '').trim();
+      const bait    = (document.getElementById('website').value || '').trim(); // honeypot
       const message = document.getElementById('message').value.trim();
       const result  = document.getElementById('result');
+
+      // Honeypot: si viene relleno, es bot
+      if (bait) {
+        result.textContent = "❌ Envío inválido.";
+        result.style.color = "red";
+        return;
+      }
 
       if (!name || !validEmail(email) || !message) {
         result.textContent = "⚠ Por favor, completa todos los campos con datos válidos.";
@@ -128,6 +140,7 @@
           from_name: name,
           reply_to: email,
           message: message,
+          subject: subject || "Nuevo contacto desde NameGasmic (ES)",
           site_source: "NameGasmic - Contact (ES)"
         });
         result.textContent = "✅ ¡Gracias! Tu mensaje fue enviado.";
@@ -143,3 +156,5 @@
 
 </body>
 </html>
+
+
