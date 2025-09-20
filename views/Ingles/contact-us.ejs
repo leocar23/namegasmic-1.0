@@ -69,7 +69,7 @@
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
     // Reemplaza solo esta key por la tuya
-    emailjs.init("TU_PUBLIC_KEY"); // <-- pega aquí tu Public Key
+    emailjs.init("NOxOLehD6yC67132b"); // <-- pega aquí tu Public Key
 
     const SERVICE_ID  = "service_n7ln6lb";     // tu Service ID (ya creado)
     const TEMPLATE_ID = "template_3fqk4vd";    // tu Template ID
@@ -84,7 +84,7 @@
       const result  = document.getElementById('result');
 
       if (!name || !validEmail(email) || !message) {
-        result.textContent = "⚠ Por favor completa todos los campos con datos válidos.";
+        result.textContent = "⚠ Please fill up all spaces with valid information.";
         result.style.color = "yellow";
         return;
       }
@@ -99,7 +99,7 @@
           message: message,
           site_source: "NameGasmic - Contact (ES)"
         });
-        result.textContent = "✅ ¡Gracias! Tu mensaje fue enviado.";
+        result.textContent = "✅ ¡Thank you! Your message has been sent.";
         result.style.color = "lightgreen";
         document.getElementById('emailForm').reset();
       } catch (e) {
@@ -139,7 +139,7 @@
         const text = (input.value || "").trim();
         if(!text) return;
         addMsg('Tú', text);
-        addMsg('Bot', 'Gracias, pronto te responderemos.');
+        addMsg('Bot', 'Thank you, we will get back at you as soon as possible.');
         input.value = "";
       });
     })();
@@ -147,3 +147,4 @@
 
 </body>
 </html>
+
